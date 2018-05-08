@@ -60,18 +60,28 @@ void macroFitHisto () {
     float lumi = 35900.;
     
     ////////////// DY highMass NLO ////////////////////////////
-    float k_factor_nom    = 0.98280948;
-
-        
-//     float k_factor_QCDup    = 1.0399461;
-//     float k_factor_QCDdown  = 0.90371829;
-//     float k_factor_JESup    = 0.78923333;
-//     float k_factor_JESdown  = 1.1755885;
+//     float k_factor_nom    = 0.98280948;
+// 
+//         
+// //     float k_factor_QCDup    = 1.0399461;
+// //     float k_factor_QCDdown  = 0.90371829;
+// //     float k_factor_JESup    = 0.78923333;
+// //     float k_factor_JESdown  = 1.1755885;
+//     
+//     float k_factor_QCDup    = 1.0399461     / k_factor_nom;    // I have to divide by k_factor_nom because DY lumi is multiplied by k_factor_nom
+//     float k_factor_QCDdown  = 0.90371829    / k_factor_nom;
+//     float k_factor_JESup    = 0.78923333    / k_factor_nom;
+//     float k_factor_JESdown  = 1.1755885     / k_factor_nom;
     
-    float k_factor_QCDup    = 1.0399461     / k_factor_nom;    // I have to divide by k_factor_nom because DY lumi is multiplied by k_factor_nom
-    float k_factor_QCDdown  = 0.90371829    / k_factor_nom;
-    float k_factor_JESup    = 0.78923333    / k_factor_nom;
-    float k_factor_JESdown  = 1.1755885     / k_factor_nom;
+    
+    
+        float k_factor_nom      = 0.97476554;
+        float k_factor_QCDup    = 1.0604774     / k_factor_nom;    // I have to divide by k_factor_nom because DY lumi is multiplied by k_factor_nom
+        float k_factor_QCDdown  = 0.91036564    / k_factor_nom;
+        float k_factor_JESup    = 0.81818968    / k_factor_nom;
+        float k_factor_JESdown  = 1.1656951     / k_factor_nom;
+    
+    
     
     
     const int Nsyst = 4;
@@ -151,7 +161,13 @@ void macroFitHisto () {
 
 
     
-
+//         TString histTitle = "hBDT_VBF_";
+//         TString hTitle          = "hBDT_VBF";
+//         TString hTitle_atanh    = "hBDT_VBF_atanh";
+        
+        TString histTitle = "hNNoutput_";
+        TString hTitle          = "hNNoutput";
+        TString hTitle_atanh    = "hNNoutput_atanh";
 
     for (int i=0;i<nfiles;i++){
 //         if (i==0) Nsyst_NoConst = 1;
@@ -176,16 +192,17 @@ void macroFitHisto () {
             
         
 //-------------------------------------------------------------------------------AGGIUNGERE QUESTI ERRORI-----------------------------------------------------------------------------
-        TString histTitle = "hBDT_VBF_";
+
+        
         for (int j=1;j<Nsyst_NoConst;++j){
 
     
             cout << "filename = " << file_names[i] << "   \t" <<  histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[j]+"_Up"<< endl;
  
-            TH1F * histoSys_BDT_Up          = (TH1F*) file->Get("hBDT_VBF")->Clone((histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[j]+"_Up").Data());
-            TH1F * histoSys_atanhBDT_Up     = (TH1F*) file->Get("hBDT_VBF_atanh")->Clone((histTitle+"atanh_mu_"+file_tag[i]+"_"+uncertainty_name[j]+"_Up").Data());
-            TH1F * histoSys_BDT_Down        = (TH1F*) file->Get("hBDT_VBF")->Clone((histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[j]+"_Down").Data());
-            TH1F * histoSys_atanhBDT_Down   = (TH1F*) file->Get("hBDT_VBF_atanh")->Clone((histTitle+"atanh_mu_"+file_tag[i]+"_"+uncertainty_name[j]+"_Down").Data());
+            TH1F * histoSys_BDT_Up          = (TH1F*) file->Get(hTitle.Data())->Clone((histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[j]+"_Up").Data());
+            TH1F * histoSys_atanhBDT_Up     = (TH1F*) file->Get(hTitle_atanh.Data())->Clone((histTitle+"atanh_mu_"+file_tag[i]+"_"+uncertainty_name[j]+"_Up").Data());
+            TH1F * histoSys_BDT_Down        = (TH1F*) file->Get(hTitle.Data())->Clone((histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[j]+"_Down").Data());
+            TH1F * histoSys_atanhBDT_Down   = (TH1F*) file->Get(hTitle_atanh.Data())->Clone((histTitle+"atanh_mu_"+file_tag[i]+"_"+uncertainty_name[j]+"_Down").Data());
             
 
                 
@@ -207,14 +224,14 @@ void macroFitHisto () {
         
         
         
-        TH1F * histo_BDT_nom = (TH1F*) file->Get("hBDT_VBF")->Clone();
-        TH1F * histo_atanhBDT_nom = (TH1F*) file->Get("hBDT_VBF_atanh")->Clone();
+        TH1F * histo_BDT_nom = (TH1F*) file->Get(hTitle.Data())->Clone();
+        TH1F * histo_atanhBDT_nom = (TH1F*) file->Get(hTitle_atanh.Data())->Clone();
         histo_BDT_nom->SetName((histTitle+"mu_"+file_tag[i]).Data());
         histo_atanhBDT_nom->SetName((histTitle+"atanh_mu_"+file_tag[i]).Data());
         
-        TString histTitleLinear = "hBDT_VBF";
+        TString histTitleLinear = hTitle;
         writeStatisticalErrors (histTitleLinear, file_tag[i], file_FitHisto, file, lumi);
-        histTitleLinear = "hBDT_VBF_atanh";
+        histTitleLinear = hTitle_atanh;
         writeStatisticalErrors (histTitleLinear, file_tag[i], file_FitHisto, file, lumi);
         
 
@@ -225,23 +242,23 @@ void macroFitHisto () {
 /*        TH1F * histoSys_BDT_Up_ = (TH1F*) file->Get()->Clone((histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[0]+"_Up").Data());
         TH1F * histoSys_atanhBDT_Up_ = (TH1F*) file->Get()->Clone((histTitle+"atanh_mu_"+file_tag[i]+"_"+uncertainty_name[0]+"_Up").Data());  */      
 
-        TH1F * histoSys_BDT_Up_      = (TH1F*) file->Get("hBDT_VBF")->Clone((histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[0]+"_Up").Data());
-        TH1F * histoSys_atanhBDT_Up_ = (TH1F*) file->Get("hBDT_VBF_atanh")->Clone((histTitle+"atanh_mu_"+file_tag[i]+"_"+uncertainty_name[0]+"_Up").Data());       
+        TH1F * histoSys_BDT_Up_      = (TH1F*) file->Get(hTitle.Data())->Clone((histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[0]+"_Up").Data());
+        TH1F * histoSys_atanhBDT_Up_ = (TH1F*) file->Get(hTitle_atanh.Data())->Clone((histTitle+"atanh_mu_"+file_tag[i]+"_"+uncertainty_name[0]+"_Up").Data());       
 
         
         
-        TH1F * histoSys_BDT_QCDup_get           = (TH1F*) file_QCDup->Get("hBDT_VBF");
-        TH1F * histoSys_atanhBDT_QCDup_get      = (TH1F*) file_QCDup->Get("hBDT_VBF_atanh");
-        TH1F * histoSys_BDT_QCDdown_get         = (TH1F*) file_QCDdown->Get("hBDT_VBF");
-        TH1F * histoSys_atanhBDT_QCDdown_get    = (TH1F*) file_QCDdown->Get("hBDT_VBF_atanh");
-        TH1F * histoSys_BDT_JESup_get           = (TH1F*) file_JESup->Get("hBDT_VBF");
-        TH1F * histoSys_atanhBDT_JESup_get      = (TH1F*) file_JESup->Get("hBDT_VBF_atanh");
-        TH1F * histoSys_BDT_JESdown_get         = (TH1F*) file_JESdown->Get("hBDT_VBF");
-        TH1F * histoSys_atanhBDT_JESdown_get    = (TH1F*) file_JESdown->Get("hBDT_VBF_atanh");
-//         TH1F * histoSys_BDT_JERup_get           = (TH1F*) file_JERup->Get("hBDT_VBF");
-//         TH1F * histoSys_atanhBDT_JERup_get      = (TH1F*) file_JERup->Get("hBDT_VBF_atanh");
-//         TH1F * histoSys_BDT_JERdown_get         = (TH1F*) file_JERdown->Get("hBDT_VBF");
-//         TH1F * histoSys_atanhBDT_JERdown_get    = (TH1F*) file_JERdown->Get("hBDT_VBF_atanh");
+        TH1F * histoSys_BDT_QCDup_get           = (TH1F*) file_QCDup->Get(hTitle.Data());
+        TH1F * histoSys_atanhBDT_QCDup_get      = (TH1F*) file_QCDup->Get(hTitle_atanh.Data());
+        TH1F * histoSys_BDT_QCDdown_get         = (TH1F*) file_QCDdown->Get(hTitle.Data());
+        TH1F * histoSys_atanhBDT_QCDdown_get    = (TH1F*) file_QCDdown->Get(hTitle_atanh.Data());
+        TH1F * histoSys_BDT_JESup_get           = (TH1F*) file_JESup->Get(hTitle.Data());
+        TH1F * histoSys_atanhBDT_JESup_get      = (TH1F*) file_JESup->Get(hTitle_atanh.Data());
+        TH1F * histoSys_BDT_JESdown_get         = (TH1F*) file_JESdown->Get(hTitle.Data());
+        TH1F * histoSys_atanhBDT_JESdown_get    = (TH1F*) file_JESdown->Get(hTitle_atanh.Data());
+//         TH1F * histoSys_BDT_JERup_get           = (TH1F*) file_JERup->Get(hTitle.Data());
+//         TH1F * histoSys_atanhBDT_JERup_get      = (TH1F*) file_JERup->Get(hTitle_atanh.Data());
+//         TH1F * histoSys_BDT_JERdown_get         = (TH1F*) file_JERdown->Get(hTitle.Data());
+//         TH1F * histoSys_atanhBDT_JERdown_get    = (TH1F*) file_JERdown->Get(hTitle_atanh.Data());
 
 
                 
@@ -330,10 +347,9 @@ void macroFitHisto () {
     }
     
     
-    
     TFile * file_data   = new TFile (file_data_name);
-    TH1F * histo_data_obs  = (TH1F*) file_data->Get("hBDT_VBF_atanh");
-    histo_data_obs->SetName("hBDT_VBF_atanh_mu_data_obs");
+    TH1F * histo_data_obs  = (TH1F*) file_data->Get(hTitle_atanh.Data());
+    histo_data_obs->SetName((hTitle_atanh+"_mu_data_obs").Data());
 
     file_FitHisto->cd();
     histo_data_obs->Write();

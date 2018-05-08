@@ -41,13 +41,14 @@ void macroBDTbinningAlmenoNeventi () {
     std::cout << "I can see here" << std::endl;
 
     float lumi = 35900.;
-    float xMax = 12;
+    float xMax = 1.5;
     
     ofstream out_bdt_binning;
     out_bdt_binning.open("bdt_binning.txt"); 
 
     TFile* fileDY= new TFile ("DYJetsToLL_M-105To160-amcatnloFXFX_mu_QCDScalenom_JESnom_v25_reskim.root");
     TH1F *hBDT_VBF_atanh_findBinning= (TH1F*) fileDY->Get("hBDT_VBF_atanh_findBinning");
+//     TH1F *hBDT_VBF_atanh_findBinning= (TH1F*) fileDY->Get("hNNoutput_atanh_findBinning");
     hBDT_VBF_atanh_findBinning->Scale(lumi);
 
 
@@ -61,7 +62,7 @@ void macroBDTbinningAlmenoNeventi () {
     if(1) { //THIS CODE COMPUTE THE BINS WITH AT LEAST "minNumberOfEventPerBin" EVENTS AND AT LEAST "binMinWidth" BIG
         
         float minNumberOfEventPerBin = 0.5;
-        float binMinWidth = 0.3;
+        float binMinWidth = 0.1;
         
         std::vector<float> binning_BDT;
         

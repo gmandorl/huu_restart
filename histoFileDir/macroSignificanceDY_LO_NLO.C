@@ -61,6 +61,12 @@ void macroSignificanceDY_LO_NLO () {
     TH1F * hDY_LO = (TH1F *) fileDY_LO->Get("hBDT_VBF_atanh");
     TH1F * hDYNLO = (TH1F *) fileDYNLO->Get("hBDT_VBF_atanh");
 
+    
+//     TH1F * hHmumu = (TH1F *) fileHmumu->Get("hNNoutput_atanh");
+//     TH1F * hDY_LO = (TH1F *) fileDY_LO->Get("hNNoutput_atanh");
+//     TH1F * hDYNLO = (TH1F *) fileDYNLO->Get("hNNoutput_atanh");
+    
+    
     hHmumu->SetLineColor(2);
     hDY_LO->SetLineColor(4);
     hDYNLO->SetLineColor(8);
@@ -76,6 +82,7 @@ void macroSignificanceDY_LO_NLO () {
 
 
     float DY_normalization = 6071.;
+//     float DY_normalization = 3420.8;
     hHmumu->Scale(8.4/hHmumu->Integral());
     hDY_LO->Scale(DY_normalization/hDY_LO->Integral());
     hDYNLO->Scale(DY_normalization/hDYNLO->Integral());

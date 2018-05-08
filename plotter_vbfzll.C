@@ -52,6 +52,11 @@
 #include "LightweightNeuralNetwork.hh"
 #include "NNet_comparison.h"
 
+
+#include "VBFFilter.h"
+
+
+
 #define getName(var)  #var
 
 
@@ -298,6 +303,19 @@ typedef struct {
         Float_t normalizedDistance_from_mH;
         Float_t mumujj_pt;
         
+        
+        Float_t cosThetaPlaneAtanh;
+        Float_t absCosThetaStarJetAtanh;
+        Float_t X_parton1Log;
+        Float_t X_parton2Log;
+        Float_t W_mass_virtual1Log;
+        Float_t W_mass_virtual2Log;
+        Float_t W_Pt_virtual1Log;
+        Float_t W_Pt_virtual2Log;
+        
+        
+        Float_t BDToutput;
+        
         float weightMVA;
         float genweight;	
 
@@ -332,7 +350,7 @@ TString output = std::string(argv[11]);
 
 bool MVAtree_to_fill = false;
 if ( ((QCDScaleWeight_str.CompareTo("none")==0)||(QCDScaleWeight_str.CompareTo("nom")==0)) && ((JESWeight_str.CompareTo("none")==0)||(JESWeight_str.CompareTo("nom")==0)) ) MVAtree_to_fill = true;
-
+MVAtree_to_fill = true;
 
 std::map <TString, float> xsec;
 std::map <TString, float> qgl_norm;
@@ -399,6 +417,14 @@ xsec["DYJetsToLL_M-105To160-amcatnloFXFX"] = 41.81;//42.73;  //42.95;//43.19;   
 xsec["DYJetstoLL_amc_0J"] = 4578.455;  // 4620.52; //   4756.180;    //4585.27; //4732.;  normalize to 5765.4 pb, 1.032 
 xsec["DYJetstoLL_amc_1J"] = 851.764;  //885.216;   //853.198;//880.5; 
 xsec["DYJetstoLL_amc_2J"] = 335.180; //338.26; //341.492;  //325.194;//335.6; 
+
+
+
+xsec["DYJetsToLL_M-50_VBFFilter-amcatnloFXFX"] = 41.81;
+xsec["DYJetsToLL_M-50_VBFFilter-madgraphMLM"] = 41.25;
+xsec["DYJetsToLL_M-105To160_VBFFilter-amcatnloFXFX"] = 41.81;
+xsec["DYJetsToLL_M-105To160_VBFFilter-madgraphMLM"] = 41.25;
+
 
 xsec["DYJetstoLL_madgraph"] = 1.162*4963.; 
 xsec["DYJetsToLL_M"] = 1.162*4963.; 
@@ -601,6 +627,12 @@ qgl_norm["DYJetstoLL_amc_Filter105"]=0.964836;
 qgl_norm["DYJetsToLL_M-105To160-amcatnloFXFX"]=0.964836;
 qgl_norm["DYJetstoLL_amc_M-50"]=0.965673;
 
+qgl_norm["DYJetsToLL_M-50_VBFFilter-amcatnloFXFX"] = 1.;
+qgl_norm["DYJetsToLL_M-50_VBFFilter-madgraphMLM"] = 1.;
+qgl_norm["DYJetsToLL_M-105To160_VBFFilter-amcatnloFXFX"] = 1.;
+qgl_norm["DYJetsToLL_M-105To160_VBFFilter-madgraphMLM"] = 1.;
+
+
 qgl_norm["GluGlu_HToMuMu"]=0.987766;
 qgl_norm["VBF_HToMuMu"]=0.974783;
 
@@ -706,7 +738,15 @@ float gen_neg_weight=0;
 	Float_t GenLepRecovered_mass[30];
 	Int_t GenLepRecovered_pdgId[30];
 	
-	
+        
+
+    Int_t nGenJet;
+        Float_t GenJet_pt[30];
+        Float_t GenJet_eta[30];
+        Float_t GenJet_phi[30];
+        Float_t GenJet_mass[30];
+
+        
 	Int_t selLeptons_charge[30], selLeptons_pdgId[30], selLeptons_looseIdPOG[30], selLeptons_trackerLayers[30],  selLeptons_eleMVAIdSppring16GenPurp[30]; 
 
 	TString str_leptons[brLeptons] = {"vLeptons_pt", "vLeptons_eta", "vLeptons_phi", "vLeptons_mass", "vLeptons_charge", "vLeptons_pdgId", "vLeptons_SF_IdCutLoose", "vLeptons_SF_IdCutTight", "vLeptons_SF_IsoLoose","vLeptons_SF_IsoTight","vLeptons_SF_trk_eta","vLeptons_SF_HLT_RunD4p2","vLeptons_SF_HLT_RunD4p3"};
@@ -963,6 +1003,17 @@ Float_t LHE_weights_scale_wgt[10];
 	tree_initial->SetBranchAddress("GenVbosons_pdgId",GenVbosons_pdgId);
 	tree_initial->SetBranchAddress("VtypeSim",&VtypeSim);
 
+        tree_initial->SetBranchAddress("nGenJet",&nGenJet);
+        tree_initial->SetBranchAddress("GenJet_pt",GenJet_pt);
+        tree_initial->SetBranchAddress("GenJet_eta",GenJet_eta);
+        tree_initial->SetBranchAddress("GenJet_phi",GenJet_phi);
+        tree_initial->SetBranchAddress("GenJet_mass",GenJet_mass);
+                
+        
+
+        
+        
+        
 	tree_initial->SetBranchAddress("nvLeptons",&nvLeptons);
 	tree_initial->SetBranchAddress("vLeptons_pt",vLeptons_pt);
 	tree_initial->SetBranchAddress("vLeptons_eta",vLeptons_eta);
@@ -1035,6 +1086,18 @@ Float_t LHE_weights_scale_wgt[10];
 
 	
 	
+	
+	
+
+    
+    
+    
+    TH1F *hdeltaR1 = new TH1F("hdeltaR1","", 30, 0.,5.);
+    hdeltaR1->GetXaxis()->SetTitle("#Delta R (lead reco jet, genJet)");
+    TH1F *hdeltaR2 = new TH1F("hdeltaR2","", 30, 0.,5.);
+    hdeltaR2->GetXaxis()->SetTitle("#Delta R (sublead reco jet, genJet)");
+    
+    
     TH1F *hHiggsSister1_Leading_eta = new TH1F("hHiggsSister1_Leading_eta","", 20, 0.,1.);
     hHiggsSister1_Leading_eta->GetXaxis()->SetTitle("SelectionCut");
     TH1F *hHiggsSister2_Subleading_eta = new TH1F("hHiggsSister2_Subleading_eta","", 20, 0.,1.);
@@ -1071,6 +1134,17 @@ Float_t LHE_weights_scale_wgt[10];
     
 	TH1F *hMqq = new TH1F("hMqq","",60,0.,3000.);
 	hMqq->GetXaxis()->SetTitle("m(qq) (GeV)");
+        TH1F *hMqq_cut06 = new TH1F("hMqq_cut06","",60,0.,3000.);
+	hMqq_cut06->GetXaxis()->SetTitle("m(qq) (GeV)");
+        TH1F *hMqq_cut08 = new TH1F("hMqq_cut08","",60,0.,3000.);
+	hMqq_cut08->GetXaxis()->SetTitle("m(qq) (GeV)");
+        TH1F *hMqq_cut10 = new TH1F("hMqq_cut10","",60,0.,3000.);
+	hMqq_cut10->GetXaxis()->SetTitle("m(qq) (GeV)");
+        TH1F *hMqq_cut12 = new TH1F("hMqq_cut12","",60,0.,3000.);
+	hMqq_cut12->GetXaxis()->SetTitle("m(qq) (GeV)");
+        
+        
+        
 	TH1F *hMqq_log = new TH1F("hMqq_log","",150.,0.,15.);
 	hMqq_log->GetXaxis()->SetTitle("ln(m(qq)) (GeV)");
 	TH1F *hqq_pt = new TH1F("hqq_pt","",40.,0.,500.);
@@ -1463,15 +1537,24 @@ Float_t LHE_weights_scale_wgt[10];
 
 
 
- const int binNUmberBDT = 10;
-        float BDT_bin[binNUmberBDT] = {0,     0.18855,         0.33855,        0.48855,        0.63855,        0.78855,        0.93855,        1.08855,        1.23855,        1.5};
-
+//  const int binNUmberBDT = 10;
+//         float BDT_bin[binNUmberBDT] = {0,     0.18855,         0.33855,        0.48855,        0.63855,        0.78855,        0.93855,        1.08855,        1.23855,        1.5};
+ 
+//         const int binNUmberBDT = 14;
+//         float BDT_bin[binNUmberBDT] = {0,     0.0732,         0.1731,         0.273,  0.3729,         0.4728,         0.5727,         0.6726,         0.7725,         0.8724,        0.9723,         1.0722,         1.1721,         1.5};
+        
+        const int binNUmberBDT = 10;
+        float BDT_bin[binNUmberBDT] = {0, 0.17175,        0.32175,        0.47175,        0.62175,        0.77175,        0.92175,      1.07175,         1.22175,        1.5};
+        
+        
         
      TH1F *hBDT_VBF_atanh_findBinning = new TH1F("hBDT_VBF_atanh_findBinning","",10000, 0, 1.5);
      hBDT_VBF_atanh_findBinning->GetXaxis()->SetTitle("tanh^{-1}(( BDT output + 1.)/2.) ");
         
     TH1F *hBDT_VBF_atanh = new TH1F("hBDT_VBF_atanh","",binNUmberBDT-1, BDT_bin);
     hBDT_VBF_atanh->GetXaxis()->SetTitle("tanh^{-1}(( BDT output + 1.)/2.) ");
+    
+
     
     int bin_new_NumberBDT = 50;
     float upperLimitBDT = 1.;//bin_new_NumberBDT*0.2;
@@ -1494,6 +1577,12 @@ Float_t LHE_weights_scale_wgt[10];
     TH1F *hThetaStarAbs = new TH1F("hThetaStarAbs","",50,0,1.1);
     hThetaStarAbs->GetXaxis()->SetTitle("|cos(#theta*)|");
 
+
+    TH1F *hBDiscriminator_CSV = new TH1F("hBDiscriminator_CSV","",60,-0.3,1.);
+    hBDiscriminator_CSV->GetXaxis()->SetTitle("max CSV");
+    
+    
+    
     TH1F *hMaxJetBTagCSV = new TH1F("hMaxJetBTagCSV","",60,-0.3,1.);
     hMaxJetBTagCSV->GetXaxis()->SetTitle("max CSV");
     TH1F *hMaxSecondJetBTagCSV = new TH1F("hMaxSecondJetBTagCSV","",60,-0.3,1.);
@@ -1505,10 +1594,27 @@ Float_t LHE_weights_scale_wgt[10];
     hMaxSecondJetBTagCMVA->GetXaxis()->SetTitle("second max CMVA ");
     
     
+    TH1F *hBDiscriminator_CMVA = new TH1F("hBDiscriminator_CMVA","",50,-1,1.);
+    hBDiscriminator_CMVA->GetXaxis()->SetTitle("tanh^{-1}( max CMVA )");
+    
+    
+    TH1F * hminAbsEta = new TH1F("hminAbsEta","",40,0,4.);
+    hminAbsEta->GetXaxis()->SetTitle("min(|#eta(j1)|, |#eta(j2)|)");
+    
+    
+    TH1F * hminAbsEta_cut06 = new TH1F("hminAbsEta_cut06","",40,0,4.);
+    hminAbsEta_cut06->GetXaxis()->SetTitle("min(|#eta(j1)|, |#eta(j2)|)");
+    TH1F * hminAbsEta_cut08 = new TH1F("hminAbsEta_cut08","",40,0,4.);
+    hminAbsEta_cut08->GetXaxis()->SetTitle("min(|#eta(j1)|, |#eta(j2)|)");
+    TH1F * hminAbsEta_cut10 = new TH1F("hminAbsEta_cut10","",40,0,4.);
+    hminAbsEta_cut10->GetXaxis()->SetTitle("min(|#eta(j1)|, |#eta(j2)|)");
+    TH1F * hminAbsEta_cut12 = new TH1F("hminAbsEta_cut12","",40,0,4.);
+    hminAbsEta_cut12->GetXaxis()->SetTitle("min(|#eta(j1)|, |#eta(j2)|)");
     
     
     
-    
+    TH1F * hminAbsEta_GEN = new TH1F("hminAbsEta_GEN","",40,0,4.);
+    hminAbsEta_GEN->GetXaxis()->SetTitle("min(|#eta(j1)|, |#eta(j2)|)");
     
     
     ///Agnese
@@ -1612,7 +1718,23 @@ Float_t LHE_weights_scale_wgt[10];
     hbinning_MttJet->GetYaxis()->SetTitle("lhe_NJ");     
     
     TH1F *hgen_mass=new TH1F ("hgen_mass","",100,80,180);  
-    hgen_mass->GetXaxis()->SetTitle("Invariant Mass");
+    hgen_mass->GetXaxis()->SetTitle("GenLeptons Mass [GeV]");
+    
+    TH1F *hgenJetMass=new TH1F ("hgenJetMass","",100,0,3000);  
+    hgenJetMass->GetXaxis()->SetTitle("GenJet Mass [GeV]");
+    TH1F *hgenJetMass_cut06=new TH1F ("hgenJetMass_cut06","",100,0,3000);  
+    hgenJetMass_cut06->GetXaxis()->SetTitle("GenJet Mass [GeV]");
+    TH1F *hgenJetMass_cut08=new TH1F ("hgenJetMass_cut08","",100,0,3000);  
+    hgenJetMass_cut08->GetXaxis()->SetTitle("GenJet Mass [GeV]");
+    TH1F *hgenJetMass_cut10=new TH1F ("hgenJetMass_cut10","",100,0,3000);  
+    hgenJetMass_cut10->GetXaxis()->SetTitle("GenJet Mass [GeV]");
+    TH1F *hgenJetMass_cut12=new TH1F ("hgenJetMass_cut12","",100,0,3000);  
+    hgenJetMass_cut12->GetXaxis()->SetTitle("GenJet Mass [GeV]");
+
+    
+    TH1F *hgenJetMass_matched=new TH1F ("hgenJetMass_matched","",100,0,500);  
+    hgenJetMass_matched->GetXaxis()->SetTitle("GenJet Mass [GeV]");
+    
 	
 	
 	TProfile *hprof_htsoft_pu  = new TProfile("hprof_htsoft_pu","",50,0.,50,0.,300.);
@@ -1641,16 +1763,23 @@ Float_t LHE_weights_scale_wgt[10];
         hMll_deltaM->GetYaxis()->SetTitle("#DeltaM (GeV)");
 
         std::vector<TH2F*> histo2D_vector;
-        std::vector<std::string> variablesName_in_2D_plot = {"Zll_mass", "deltaM", "Xparton1Log", "Xparton2Log", "RpT", "zStar" };
+        std::vector<std::string> variablesName_in_2D_plot = {"Zll_mass", "deltaM", "deltaR1", "deltaR2"/*, "Xparton1Log", "Xparton2Log"*/, "RpT", "zStar", "BDToutput", "genJetMassLeading", "hgenJetMassMatched", "Mqq" };
 
-        std::vector<float> limitDown  = {115,   0.,     -6,     -6,     0.,     -8};
-        std::vector<float> limitUp    = {135,   0.1,    0.,     0.,     0.5,    3.};
-        std::vector<int> binNumber  =   {12,    5,      6,      6,      10,     5};
+//         std::vector<float> limitDown  = {115,   0.,     -6,     -6,     0.,     -8,     0,      0,      0};
+//         std::vector<float> limitUp    = {135,   0.1,    0.,     0.,     0.5,    3.,     1.6,    1500,    1500};
+//         std::vector<int> binNumber  =   {12,    5,      6,      6,      10,     5,      16,     100,     100};
+        
+        std::vector<float> limitDown  = {115,   0.,     0,     0,     0.,     -8,     0,      0,      0,      0};
+        std::vector<float> limitUp    = {135,   0.1,    6,     6,     0.5,    3.,     1.6,    1500,    1500,    1500};
+        std::vector<int> binNumber  =   {12,    5,      20,      20,      10,     5,      16,     100,     100,     100};
+        
         
         for (int i = 0; i < variablesName_in_2D_plot.size(); i++) {
             for (int j = i+1; j < variablesName_in_2D_plot.size(); j++) {
 
                 TH2F * histo2D = new TH2F (("histo2D_"+variablesName_in_2D_plot[i]+"_"+variablesName_in_2D_plot[j]).c_str(), "", binNumber[i], limitDown[i], limitUp[i], binNumber[j], limitDown[j], limitUp[j]);
+                histo2D->GetXaxis()->SetTitle(variablesName_in_2D_plot[i].c_str());
+                histo2D->GetYaxis()->SetTitle(variablesName_in_2D_plot[j].c_str());
                 histo2D_vector.push_back(histo2D);
                 
                 
@@ -1664,8 +1793,8 @@ Float_t LHE_weights_scale_wgt[10];
 //         TH1F* histArray[numArray] = { hMqq, hEtaQQ,hHTsoft,hSoft_n2,hSoft_n5,hSoft_n10,hHTsoftEWK,hSoft_n2EWK,hSoft_n5EWK,hSoft_n10EWK,hHTsoftEWK_bdt,hSoft_n2EWK_bdt,hSoft_n5EWK_bdt, hSoft_n10EWK_bdt,hnPVs, hJet1q_pt, hJet1q_eta, hJet1q_ptd, hJet1q_axis2, hJet1q_mult, hJet2q_pt, hJet2q_eta, hJet2q_ptd, hJet2q_axis2, hJet2q_mult, hmet,   hJet1q_leadTrackPt, hJet2q_leadTrackPt, hqq_pt,hV_mass, hqgl, hqgl2, hZll_mass, hZll_pt, hZll_phi, hZll_eta, hrho, hlepton1_pt, hlepton2_pt, hlepton1_eta, hlepton2_eta, hHT, hDeltaRelQQ, hRptHard, hEtaQQSum, hPhiZQ1, hZll_y, hZll_ystar, hZll_zstar, hMqq_log, hlheV_pt, hJet3_pt, hlheHT_log, hPhiQQ, hJets12_pt_log, hJets12_pt, hJet1q_pt_log, hJet2q_pt_log, hbdt, hbdt_atanh,hbdt_atanh2 , hlepton1_iso03, hlepton2_iso03, hveto_jet3pt_nom, hveto_jet3pt_denom, hveto_ht_nom, hveto_ht_denom, hveto_softht_nom, hveto_softht_denom, hveto_softpt_nom, hveto_softpt_denom, hJet2q_phi, hJet1q_pffhi, hNAdJets, hNAdJets_bdt, hJet3_pt_bdt, hAdJetHT_bdt, hNAdJets_bdt2, hJet3_pt_bdt2, hAdJetHT_bdt2,hNAdJets_mjj1, hJet3_pt_mjj1, hAdJetHT_mjj1,hNAdJets_mjj2, hJet3_pt_mjj2, hAdJetHT_mjj2, hHTsoftEWK_bdt2,hSoft_n2EWK_bdt2,hSoft_n5EWK_bdt2, hSoft_n10EWK_bdt2,hHTsoftEWK_mjj1, hSoft_n2EWK_mjj1,hSoft_n5EWK_mjj1,hSoft_n10EWK_mjj1, hHTsoftEWK_mjj2,hSoft_n2EWK_mjj2,hSoft_n5EWK_mjj2,hSoft_n10EWK_mjj2 ,hJet1q_eta_bdt, hJet1q_eta_bdt2, hJet2q_eta_bdt, hJet2q_eta_bdt2, hsoftleadTrackPt, hsoftleadTrackEta, hAdJetHT, hJet3_eta , hJet3_pt_new , hJet3_eta_bdt, hJet3_eta_bdt2, hThetaStar, hMaxJetBTag};
 
         
-        const int numArray= 165;//64+8 
-        TH1F* histArray[numArray] = { hMqq, hEtaQQ,hSoft_n2,hSoft_n5,hSoft_n10,hHTsoftEWK,hSoft_n2EWK,hSoft_n5EWK,hSoft_n10EWK,hHTsoftEWK_bdt,hSoft_n2EWK_bdt,hSoft_n5EWK_bdt, hSoft_n10EWK_bdt,hnPVs, hJet1q_pt, hJet1q_eta, hJet1q_ptd, hJet1q_axis2, hJet1q_mult, hJet2q_pt, hJet2q_eta, hJet2q_ptd, hJet2q_axis2, hJet2q_mult, hVtype, hVtypeSim, hmet, hJet1q_leadTrackPt, hJet2q_leadTrackPt, hqq_pt, hqgl, hqgl2,hqglAtanh, hqgl2Atanh, hZll_mass, hZll_pt, hZll_phi, hZll_eta, hrho, hlepton1_pt, hlepton2_pt, hlepton1_eta, hlepton2_eta, hHT, hDeltaRelQQ, hRpt, hRptAtanh, hEtaQQSum, hPhiZQ1, hZll_y, hZll_ystar, hZll_zstar, hMqq_log, hlheV_pt, hlheNpNLO, hJet3_pt, hJet3_pt_log, hlheHT_log, hlheNj, hPhiQQ, hJets12_pt_log, hJets12_pt, hJet1q_pt_log, hJet2q_pt_log, hbdt, hbdt_atanh,hbdt_atanh2 , hlepton1_iso03, hlepton2_iso03, hveto_jet3pt_nom, hveto_jet3pt_denom, hveto_ht_nom, hveto_ht_denom, hveto_softht_nom, hveto_softht_denom, hveto_softpt_nom, hveto_softpt_denom, hJet2q_phi, hJet1q_phi, hNAdJets, hNAdJets_bdt, hJet3_pt_bdt, hAdJetHT_bdt, hNAdJets_bdt2, hJet3_pt_bdt2, hAdJetHT_bdt2, hHTsoftEWK_bdt2,hSoft_n2EWK_bdt2,hSoft_n5EWK_bdt2, hPtSoftJets, hJet1q_eta_bdt, hJet1q_eta_bdt2, hJet2q_eta_bdt, hJet2q_eta_bdt2, hsoftleadTrackPt, hsoftleadTrackEta, hAdJetHT, hJet3_eta, hJet3_etaRatio, hJet3_pt_new , hJet3_eta_bdt, hJet3_eta_bdt2, hBDT_VBF, hBDT_VBF_atanh, hBDT_VBF_atanh_findBinning, hThetaStarJet, hThetaPlanes, hThetaStarJetAtanh, hThetaPlanesAtanh, hThetaStar, hThetaStarAbs, hMaxJetBTagCSV,hweights_weighted,hweights,hdeltaMRel,hdeltaM, hnormalizedDistance_from_mH, hHiggsSister1_Leading_eta,hHiggsSister2_Subleading_eta,hHiggsSister1_Leading_phi,hHiggsSister2_Subleading_phi,hHiggsSister1_Leading_R,hHiggsSister2_Subleading_R,  hMaxJetBTagCMVA,hTotalEnergy,hTotalEnergylog,hWWmass,hDiffmass,hpdgId,hgen_mass,hEnergy_fraction_Parton2_log,hEnergy_fraction_Parton1_log, hmumujj_pt, hmumujj_ptLog, hEnergy_fraction_Parton1,hPz,hPzAbs, hPzAbsLog, hInvariant_MassLog, hInvariant_Mass, hthetastar_W2toHW1, hthetastar_W1toHW2,hthetastar_HtoWW, hEnergy_fraction_Parton2, hVirtual_Wmass1,hVirtual_Wmass2,hVirtual_Wmass1_log,hVirtual_Wmass2_log,hVirtual_Pt1,hVirtual_Pt2, hVirtual_Pt1_log, hVirtual_Pt2_log, hVirtual_eta1,hVirtual_eta2,hTheta_HiggsJ1,hTheta_HiggsJ2,hthetastar_W1,hthetastar_W2, hVirtual_phi1, hVirtual_phi2, hParton_M1,hParton_M2,hMaxSecondJetBTagCSV, hMaxSecondJetBTagCMVA, hSelectionCuts};
+        const int numArray= 185;//64+8 
+        TH1F* histArray[numArray] = { hMqq,hMqq_cut06, hMqq_cut08, hMqq_cut10, hMqq_cut12, hgenJetMass_cut06, hgenJetMass_cut08, hgenJetMass_cut10, hgenJetMass_cut12, hEtaQQ,hSoft_n2,hSoft_n5,hSoft_n10,hHTsoftEWK,hSoft_n2EWK,hSoft_n5EWK,hSoft_n10EWK,hHTsoftEWK_bdt,hSoft_n2EWK_bdt,hSoft_n5EWK_bdt, hSoft_n10EWK_bdt,hnPVs, hJet1q_pt, hJet1q_eta, hJet1q_ptd, hJet1q_axis2, hJet1q_mult, hJet2q_pt, hJet2q_eta, hJet2q_ptd, hJet2q_axis2, hJet2q_mult, hVtype, hVtypeSim, hmet, hJet1q_leadTrackPt, hJet2q_leadTrackPt, hqq_pt, hqgl, hqgl2,hqglAtanh, hqgl2Atanh, hZll_mass, hZll_pt, hZll_phi, hZll_eta, hrho, hlepton1_pt, hlepton2_pt, hlepton1_eta, hlepton2_eta, hHT, hDeltaRelQQ, hRpt, hRptAtanh, hEtaQQSum, hPhiZQ1, hZll_y, hZll_ystar, hZll_zstar, hMqq_log, hlheV_pt, hlheNpNLO, hJet3_pt, hJet3_pt_log, hlheHT_log, hlheNj, hPhiQQ, hJets12_pt_log, hJets12_pt, hJet1q_pt_log, hJet2q_pt_log, hbdt, hbdt_atanh,hbdt_atanh2 , hlepton1_iso03, hlepton2_iso03, hveto_jet3pt_nom, hveto_jet3pt_denom, hveto_ht_nom, hveto_ht_denom, hveto_softht_nom, hveto_softht_denom, hveto_softpt_nom, hveto_softpt_denom, hJet2q_phi, hJet1q_phi, hNAdJets, hNAdJets_bdt, hJet3_pt_bdt, hAdJetHT_bdt, hNAdJets_bdt2, hJet3_pt_bdt2, hAdJetHT_bdt2, hHTsoftEWK_bdt2,hSoft_n2EWK_bdt2,hSoft_n5EWK_bdt2, hPtSoftJets, hJet1q_eta_bdt, hJet1q_eta_bdt2, hJet2q_eta_bdt, hJet2q_eta_bdt2, hsoftleadTrackPt, hsoftleadTrackEta, hAdJetHT, hJet3_eta, hJet3_etaRatio, hJet3_pt_new , hJet3_eta_bdt, hJet3_eta_bdt2, hBDT_VBF, hBDT_VBF_atanh, hBDT_VBF_atanh_findBinning, hThetaStarJet, hThetaPlanes, hThetaStarJetAtanh, hThetaPlanesAtanh, hThetaStar, hThetaStarAbs, hMaxJetBTagCSV,hBDiscriminator_CSV, hBDiscriminator_CMVA, hweights_weighted,hweights,hdeltaMRel,hdeltaM, hnormalizedDistance_from_mH, hminAbsEta, hminAbsEta_GEN, hminAbsEta_cut06, hminAbsEta_cut08, hminAbsEta_cut10, hminAbsEta_cut12,  hHiggsSister1_Leading_eta,hHiggsSister2_Subleading_eta,hHiggsSister1_Leading_phi,hHiggsSister2_Subleading_phi,hHiggsSister1_Leading_R,hHiggsSister2_Subleading_R, hdeltaR1, hdeltaR2 ,  hMaxJetBTagCMVA,hTotalEnergy,hTotalEnergylog,hWWmass,hDiffmass,hpdgId,hgen_mass,hgenJetMass, hgenJetMass_matched, hEnergy_fraction_Parton2_log,hEnergy_fraction_Parton1_log, hmumujj_pt, hmumujj_ptLog, hEnergy_fraction_Parton1,hPz,hPzAbs, hPzAbsLog, hInvariant_MassLog, hInvariant_Mass, hthetastar_W2toHW1, hthetastar_W1toHW2,hthetastar_HtoWW, hEnergy_fraction_Parton2, hVirtual_Wmass1,hVirtual_Wmass2,hVirtual_Wmass1_log,hVirtual_Wmass2_log,hVirtual_Pt1,hVirtual_Pt2, hVirtual_Pt1_log, hVirtual_Pt2_log, hVirtual_eta1,hVirtual_eta2,hTheta_HiggsJ1,hTheta_HiggsJ2,hthetastar_W1,hthetastar_W2, hVirtual_phi1, hVirtual_phi2, hParton_M1,hParton_M2,hMaxSecondJetBTagCSV, hMaxSecondJetBTagCMVA, hSelectionCuts};
      
         
 //
@@ -1880,13 +2009,20 @@ if (data==1) Nsyst_NoConst = 1;
 	treeMVA->Branch("qq_pt",&TMVA.qq_pt,"qq_pt/F");
 	treeMVA->Branch("qgl_1q",&TMVA.qgl_1q,"qgl_1q/F");
 	treeMVA->Branch("qgl_2q",&TMVA.qgl_2q,"qgl_2q/F");
-        treeMVA->Branch("qgl_1qAtanh",&TMVA.qgl_1qAtanh,"qgl_1qAtanh/F");
-        treeMVA->Branch("qgl_2qAtanh",&TMVA.qgl_2qAtanh,"qgl_2qAtanh/F");
+
 	treeMVA->Branch("Jet3_pt",&TMVA.Jet3_pt,"Jet3_pt/F");
 	treeMVA->Branch("Rpt",&TMVA.Rpt,"Rpt/F");
     treeMVA->Branch("Jet3_eta",&TMVA.Jet3_eta,"Jet_eta/F");
     treeMVA->Branch("mumujj_pt",&TMVA.mumujj_pt,"mumujj_pt/F");
         
+    
+    
+    
+
+
+
+        
+    
         
         treeMVA->Branch("softActivityEWK_njets2",&TMVA.softActivityEWK_njets2,"softActivityEWK_njets2/I");
         treeMVA->Branch("softActivityEWK_njets5",&TMVA.softActivityEWK_njets5,"softActivityEWK_njets5/I");
@@ -1930,8 +2066,25 @@ if (data==1) Nsyst_NoConst = 1;
 	treeMVA->Branch("energytotLog",&TMVA.energytotLog,"energytotLog/F");  
     treeMVA->Branch("deltaMRel", &TMVA.deltaMRel,"deltaMRel/F");
     treeMVA->Branch("deltaM",  &TMVA.deltaM,"deltaM/F"); 
-    treeMVA->Branch("normalizedDistance_from_mH",  &TMVA.normalizedDistance_from_mH,"normalizedDistance_from_mH/F");  
+    treeMVA->Branch("normalizedDistance_from_mH",  &TMVA.normalizedDistance_from_mH,"normalizedDistance_from_mH/F"); 
     
+    
+                       
+        treeMVA->Branch("qgl_1qAtanh",&TMVA.qgl_1qAtanh,"qgl_1qAtanh/F");
+        treeMVA->Branch("qgl_2qAtanh",&TMVA.qgl_2qAtanh,"qgl_2qAtanh/F");
+        
+        treeMVA->Branch("cosThetaPlaneAtanh",&TMVA.cosThetaPlaneAtanh,"cosThetaPlaneAtanh/F");
+        treeMVA->Branch("absCosThetaStarJetAtanh",&TMVA.absCosThetaStarJetAtanh,"absCosThetaStarJetAtanh/F");
+        treeMVA->Branch("X_parton1Log",&TMVA.X_parton1Log,"X_parton1Log/F");
+        treeMVA->Branch("X_parton2Log",&TMVA.X_parton2Log,"X_parton2Log/F");
+        treeMVA->Branch("W_mass_virtual1Log",&TMVA.W_mass_virtual1Log,"W_mass_virtual1Log/F");
+        treeMVA->Branch("W_mass_virtual2Log",&TMVA.W_mass_virtual2Log,"W_mass_virtual2Log/F");
+        treeMVA->Branch("W_Pt_virtual1Log",&TMVA.W_Pt_virtual1Log,"W_Pt_virtual1Log/F");
+        treeMVA->Branch("W_Pt_virtual2Log",&TMVA.W_Pt_virtual2Log,"W_Pt_virtual2Log/F");
+        
+        
+        treeMVA->Branch("BDToutput",&TMVA.BDToutput,"BDToutput/F");
+        
         treeMVA->Branch("weightMVA",  &TMVA.weightMVA,"weightMVA/F"); 
         treeMVA->Branch("genweight",  &TMVA.genweight,"genweight/F"); 
   
@@ -1995,14 +2148,19 @@ if (data==1) Nsyst_NoConst = 1;
         
         
 /////////////////////////VARIABILI APRILE BTDG/////////////////////////////////////////////////////////
-//         reader->AddVariable("ll_mass",&TMVA.ll_mass);   
-//         reader->AddVariable("MqqLog",&TMVA.MqqLog);
-//         reader->AddVariable("Rpt",&TMVA.Rpt);
-//         reader->AddVariable("W_mass_virtual1",&TMVA.W_mass_virtual1); 
-//         reader->AddVariable("ll_zstar",&TMVA.ll_zstar);
-//         reader->AddVariable("softActivityEWK_njets5",&temp_softActivityEWK_njets5);   // this is float
-//         reader->AddVariable("ll_pt",&TMVA.ll_pt);
-//         reader->AddVariable("W_mass_virtual2",&TMVA.W_mass_virtual2);
+        reader->AddVariable("ll_mass",&TMVA.ll_mass);   
+        reader->AddVariable("MqqLog",&TMVA.MqqLog);
+        reader->AddVariable("Rpt",&TMVA.Rpt);
+//         reader->AddVariable("W_mass_virtual1Log",&TMVA.W_mass_virtual1Log); 
+        reader->AddVariable("W_mass_virtual1",&TMVA.W_mass_virtual1Log); 
+        reader->AddVariable("ll_zstar",&TMVA.ll_zstar);
+        reader->AddVariable("softActivityEWK_njets5",&temp_softActivityEWK_njets5);   // this is float
+        reader->AddVariable("ll_pt",&TMVA.ll_pt);
+//         reader->AddVariable("W_mass_virtual2Log",&TMVA.W_mass_virtual2Log);
+        reader->AddVariable("W_mass_virtual2",&TMVA.W_mass_virtual2Log);
+        
+        
+//         {"ll_mass","MqqLog", "Rpt","W_mass_virtual1Log","ll_zstar","softActivityEWK_njets5", "ll_pt","W_mass_virtual2Log"}
         
         
 /////////////////////////VARIABILI APRILE MLP/////////////////////////////////////////////////////////
@@ -2020,16 +2178,16 @@ if (data==1) Nsyst_NoConst = 1;
         
         
 /////////////////////////VARIABILI APRILE BTDG W/O WMASSES /////////////////////////////////////////////////////////
-        reader->AddVariable("ll_mass",&TMVA.ll_mass);   
-        reader->AddVariable("MqqLog",&TMVA.MqqLog);
-        reader->AddVariable("Rpt",&TMVA.Rpt);
-        reader->AddVariable("ll_zstar",&TMVA.ll_zstar);
-        reader->AddVariable("softActivityEWK_njets5",&temp_softActivityEWK_njets5);   // this is float
-        reader->AddVariable("ll_pt",&TMVA.ll_pt);
-        reader->AddVariable("qgl_1qAtanh",&TMVA.qgl_1qAtanh); 
-        reader->AddVariable("W_mass_virtual1",&TMVA.W_mass_virtual1); 
-        reader->AddSpectator("ll_mass",&TMVA.ll_mass);
-        reader->AddSpectator("deltaMRel",&TMVA.deltaMRel);
+//         reader->AddVariable("ll_mass",&TMVA.ll_mass);   
+//         reader->AddVariable("MqqLog",&TMVA.MqqLog);
+//         reader->AddVariable("Rpt",&TMVA.Rpt);
+//         reader->AddVariable("ll_zstar",&TMVA.ll_zstar);
+//         reader->AddVariable("softActivityEWK_njets5",&temp_softActivityEWK_njets5);   // this is float
+//         reader->AddVariable("ll_pt",&TMVA.ll_pt);
+//         reader->AddVariable("qgl_1qAtanh",&TMVA.qgl_1qAtanh); 
+//         reader->AddVariable("W_mass_virtual1",&TMVA.W_mass_virtual1); 
+//         reader->AddSpectator("ll_mass",&TMVA.ll_mass);
+//         reader->AddSpectator("deltaMRel",&TMVA.deltaMRel);
         
         
 // // // // //     reader->AddVariable("ll_mass",&TMVA.ll_mass);    
@@ -2108,9 +2266,11 @@ if (data==1) Nsyst_NoConst = 1;
 //         reader->BookMVA("BDTG", "/afs/cern.ch/user/a/abonavit/private/tesi/CMSSW_8_0_28/src/code/BDTClassification/trainingForRecoveringJune/Classification_BDTG.weights_JuneOption_ll_mass_Mqq_RptHard_DeltaEtaQQ_llPt_llEta_Jet2qPt_EWKHTsoft.xml");
 //         reader->BookMVA("BDTG", "/afs/cern.ch/user/a/abonavit/private/tesi/CMSSW_8_0_28/src/code/BDTClassification/januaryTraining/Classification_BDTG.weights_80000Event_200Tree_4Deep_mll_Mqq_RptHard_llZstar_softN5_llPt_Wmass2_Wpt1.xml");
 //         reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/marchTraining/Classification_BDTG.weights_80000Event_100Tree_2Deep_mll_Mqq_RptHard_llZstar_softN5_Wmass1.xml");
-//         reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_Wmass1_llZstar_softN5_llPt_Wmass2.xml");
+        reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_Wmass1_llZstar_softN5_llPt_Wmass2.xml");
 //         reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_llZstar_softN5_llPt_qgl1qAtanh.xml");
-        reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_llZstar_softN5_llPt_qgl1qAtanh_Wmass1.xml");
+//         reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_llZstar_softN5_llPt_qgl1qAtanh_Wmass1.xml");
+
+//             reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/mayTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_Wmass1_llZstar_softN5_llPt_Wmass2.xml");
 
 //         reader->BookMVA("MLP", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_MLP.weights_35000Event_mll_MqqLog_Rpt_Wmass1_llZstar_softN5_llPt_Wmass2_qgl1qAtanh.xml");
 
@@ -2147,6 +2307,15 @@ if (data==1) Nsyst_NoConst = 1;
  //  for (int entry=0; entry<2000;++entry){
 
               
+//      if ( (entry != 4787) && (entry != 8308) && (entry != 22761) && (entry != 32720) && (entry != 46473) && (entry != 55252) && (entry != 56360) && (entry != 57195) && (entry != 80033) && (entry != 87393) && (entry != 148917) && (entry != 154148) && (entry != 161992) && (entry != 164665) && (entry != 194110) && (entry != 229504) && (entry != 237120) && (entry != 249155) && (entry != 252616) && (entry != 258547) && (entry != 265599) && (entry != 273465) && (entry != 280313) && (entry != 302077) && (entry != 303664) && (entry != 308495) && (entry != 310651) && (entry != 310748) && (entry != 324889) && (entry != 328329) && (entry != 329909) && (entry != 355420) && (entry != 366617) && (entry !=   390667) && (entry !=   392749) && (entry !=   394375) && (entry !=   401849) && (entry !=   404989) && (entry !=   408357) && (entry !=   425786) && (entry !=   427628) && (entry !=   436848) && (entry !=   437986) && (entry !=   443537) && (entry !=   467547) && (entry !=   477715) && (entry !=   481352) && (entry !=   484553) && (entry !=   511362) && (entry !=   528665) && (entry !=   536729) && (entry !=   539025) && (entry !=   560850) && (entry !=   561803) && (entry !=   562517) && (entry !=   575788) && (entry !=   593305) && (entry !=   593800) && (entry !=   602564) && (entry !=   602824) && (entry !=   603028) && (entry !=   626380) && (entry !=   638724) && (entry !=   649698) && (entry !=   655687) && (entry !=   663670) && (entry !=   681660) && (entry !=   682601) && (entry !=   699267) && (entry !=   702234) && (entry !=   703302) && (entry !=   716756) && (entry !=   724288) && (entry !=   727431) && (entry !=   765586) && (entry !=   770406) && (entry !=   783386) && (entry !=   789267) && (entry !=   790730) && (entry !=   797479) && (entry !=   805647) && (entry !=   809129) && (entry !=   823961) && (entry !=   832809) && (entry !=   834304) && (entry !=   849385) && (entry !=   852840) && (entry !=   852944) && (entry !=   858622) && (entry !=   890201) && (entry !=   899894) && (entry !=   928382) && (entry !=   932415) && (entry !=   947356) && (entry !=   949146) && (entry !=   969778) && (entry !=   972886) && (entry !=   978168) && (entry !=   988717) && (entry !=   991104) && (entry !=   994428) && (entry !=   1004135) && (entry !=   1006420) && (entry !=   1019709) && (entry !=   1035251) && (entry !=   1050713) && (entry !=   1060715) && (entry !=   1061896) && (entry !=   1073326) && (entry !=   1073567) && (entry !=   1090780) && (entry !=   1091600) && (entry !=   1098146) && (entry !=   1122343) && (entry !=   1134366) && (entry !=   1139646) && (entry !=   1146350) && (entry !=   1154885) && (entry !=   1155204) && (entry !=   1157237) && (entry !=   1159402) && (entry !=   1168739) && (entry !=   1186210) && (entry !=   1223647) && (entry !=   1232887) && (entry !=   1244130) && (entry !=   1267114) && (entry !=   1299130) && (entry !=   1320667) && (entry !=   1327994) && (entry !=   1342187) && (entry !=   1347575) && (entry !=   1398908) && (entry !=   1406095) && (entry !=   1407029) && (entry !=   1409048) && (entry !=   1426614) && (entry !=   1431689) && (entry !=   1461306) && (entry !=   1466498)) continue;
+//      
+//          
+//          
+//          
+// 
+// std::cout << "entry       " << entry  << std::endl;
+
+
         if (entry%10000 == 0) std::cout << "Writing " << entry << "th event" << std::endl;
         tree_initial->GetEntry(entry);
         ++count1;
@@ -2187,8 +2356,19 @@ if (data==1) Nsyst_NoConst = 1;
 	TMVA.qgl_1q=0;
 	TMVA.qgl_2q=0;
         TMVA.qgl_1qAtanh=0;
-	TMVA.qgl_2qAtanh=0;
+	TMVA.qgl_2qAtanh==0;
         
+        
+        TMVA.cosThetaPlaneAtanh =0;
+        TMVA.absCosThetaStarJetAtanh =0;
+        TMVA.X_parton1Log=0;
+        TMVA.X_parton2Log=0;
+        TMVA.W_mass_virtual1Log=0;
+        TMVA.W_mass_virtual2Log=0;
+        TMVA.W_Pt_virtual1Log=0;
+        TMVA.W_Pt_virtual2Log=0;
+                    
+                    
     
         TMVA.softActivityEWK_njets2=0;
         TMVA.softActivityEWK_njets5=0;
@@ -2198,6 +2378,8 @@ if (data==1) Nsyst_NoConst = 1;
         TMVA.weightMVA=0;
         TMVA.genweight=0;
         TMVA.deltaM=0;
+        
+        TMVA.BDToutput=0;
         
         float maxBTagCSV = -0.2;
         float maxBTagCMVA = -1.2;
@@ -2278,8 +2460,8 @@ if (data==1) Nsyst_NoConst = 1;
         if(nGenLep==2){
             pdgId_mu1=GenLep_pdgId[0];
             pdgId_mu2=GenLep_pdgId[1];
-            Genlepton1.SetPtEtaPhiM(GenLep_pt[0],GenLep_eta[0], GenLep_phi[0], GenLep_mass[0] );
-            Genlepton2.SetPtEtaPhiM(GenLep_pt[1],GenLep_eta[1], GenLep_phi[1], GenLep_mass[1] );
+            Genlepton1.SetPtEtaPhiM(GenLep_pt[0],GenLep_eta[0], GenLep_phi[0], GenLep_mass[0]);
+            Genlepton2.SetPtEtaPhiM(GenLep_pt[1],GenLep_eta[1], GenLep_phi[1], GenLep_mass[1]);
     	}
     			
     	if(nGenLepRecovered==2){	
@@ -2297,6 +2479,43 @@ if (data==1) Nsyst_NoConst = 1;
 		Float_t gen_phi = GenLeptons.Phi();
                 
                 
+        
+                
+                
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////// FILTER GENJET INVARIANT MASS ////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        std::vector<TLorentzVector> genLeptons;
+        
+        for (int n=0; n<nGenLep; n++) {
+            TLorentzVector genLepton_tmp;
+            genLepton_tmp.SetPtEtaPhiM(GenLep_pt[n],GenLep_eta[n], GenLep_phi[n], GenLep_mass[n]);
+            genLeptons.push_back(genLepton_tmp);
+        }
+
+        for (int n=0; n<nGenLepRecovered; n++) {
+            TLorentzVector genLepton_tmp;
+            genLepton_tmp.SetPtEtaPhiM(GenLepRecovered_pt[n],GenLepRecovered_eta[n], GenLepRecovered_phi[n], GenLepRecovered_mass[n]);
+            genLeptons.push_back(genLepton_tmp);
+        }
+        
+        
+           
+        std::vector<TLorentzVector> genJet;
+        
+        for (int n=0; n<nGenJet; n++) {
+            TLorentzVector genJet_tmp;
+            genJet_tmp.SetPtEtaPhiM(GenJet_pt[n],GenJet_eta[n], GenJet_phi[n], GenJet_mass[n]);
+            genJet.push_back(genJet_tmp);
+        }
+        
+        
+//         float genJetMass = VBFFilter(genLeptons, genJet);
+        
+        
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         
                             
@@ -2635,14 +2854,22 @@ if (data==1) Nsyst_NoConst = 1;
   
                         
 // 	if (Zll_mass < 105 ) continue;
-        if (Zll_mass < 110 ) continue;
-//         if (Zll_mass < 115 ) continue;      //----------------------------------------------------------------------------------------------------
+//         if (Zll_mass < 110 ) continue;
+        if (Zll_mass < 115 ) continue;      //----------------------------------------------------------------------------------------------------
         else  ++count12;
         hSelectionCuts->Fill(2, genweight);
                 		
-        if (Zll_mass > 145 ) continue;
-//         if (Zll_mass > 135 ) continue;      //----------------------------------------------------------------------------------------------------
+//         if (Zll_mass > 145 ) continue;
+        if (Zll_mass > 135 ) continue;      //----------------------------------------------------------------------------------------------------
         hSelectionCuts->Fill(3, genweight);
+        
+        
+        
+        
+        
+//         if (Zll_mass > 118 && Zll_mass < 128 ) continue;
+        
+        
         
                 
         if  (region.CompareTo("mu")==0) if (!((HLT_IsoMu24==1) || (HLT_IsoTkMu24==1)  )) continue; 
@@ -2716,7 +2943,6 @@ if (data==1) Nsyst_NoConst = 1;
                 else  ++count13;
                 hSelectionCuts->Fill(16, genweight);
 
-//		cout<<genweight<<endl;
 
 		presel+=genweight;
 
@@ -2735,6 +2961,60 @@ if (data==1) Nsyst_NoConst = 1;
                 hSelectionCuts->Fill(17, genweight);
                 if (Rpt>0.4) continue;      //----------------------------------------------------------------------------------------------------
 
+                
+
+//                 float genJetMass = VBFFilter(genLeptons, genJet);
+            float genJetMass_leading = 0;
+//             std::vector<TLorentzVector> genJetsWithoutLeptonsP4= VBFFilter(genLeptons, genJet);
+            std::vector<TLorentzVector> recoLepton;
+            recoLepton.push_back(lepton1);
+            recoLepton.push_back(lepton2);
+            std::vector<TLorentzVector> genJetsWithoutLeptonsP4= VBFFilter(recoLepton, genJet);
+            if (genJetsWithoutLeptonsP4.size() > 1) genJetMass_leading = (genJetsWithoutLeptonsP4[0] + genJetsWithoutLeptonsP4[1]).M();
+                 
+            float minAbsEta_GEN = 10;
+            if (genJetsWithoutLeptonsP4.size() > 1) minAbsEta_GEN = min(abs(genJetsWithoutLeptonsP4[0].Eta()), abs(genJetsWithoutLeptonsP4[1].Eta()));
+            
+            float minAbsEta = 10;
+            minAbsEta = min(abs(Qjet1.Eta()), abs(Qjet2.Eta()));
+            
+            
+//             if (genJetMass_leading > 500 ) continue;
+//             std::cout << std::endl << Qjet1.Pt() << "  " << Qjet1.Eta() << " \t " << Qjet2.Pt() << "  " << Qjet2.Eta() << " \t\t " << genJetsWithoutLeptonsP4[0].Pt() << "  " << genJetsWithoutLeptonsP4[0].Eta() << " \t " << genJetsWithoutLeptonsP4[1].Pt() << "  " << genJetsWithoutLeptonsP4[1].Eta() << " \t\t " << Mqq << "  " << genJetMass_leading << std::endl << std::endl;
+            
+            
+            
+            float deltaR1 = 100;
+            float deltaR2 = 100;
+            float deltaR_tmp = 100;
+            int indexFisrtJet = 0;
+            int indexSecondJet = 0;
+            
+            for (int n=0; n < genJetsWithoutLeptonsP4.size(); n++) {
+                
+                deltaR_tmp = genJetsWithoutLeptonsP4[n].DeltaR(Qjet1);
+                if (deltaR1 > deltaR_tmp) {
+                    deltaR1 = deltaR_tmp;
+                    indexFisrtJet = n;
+                }
+            }
+            
+            deltaR_tmp = 100;
+           for (int n=0; n < genJetsWithoutLeptonsP4.size(); n++) {
+                if (indexFisrtJet==n) continue;
+                deltaR_tmp = genJetsWithoutLeptonsP4[n].DeltaR(Qjet2);
+                if (deltaR2 > deltaR_tmp) {
+                    deltaR2 = deltaR_tmp;
+                    indexSecondJet = n;
+                }
+            } 
+            
+            float genJetMass_matched = 0;
+            if (genJetsWithoutLeptonsP4.size() > 1 && deltaR1<0.3 && deltaR2<0.3) genJetMass_matched = (genJetsWithoutLeptonsP4[indexFisrtJet] + genJetsWithoutLeptonsP4[indexSecondJet]).M();
+//             if (Mqq - genJetMass_leading < 400) continue;
+            
+            
+            
 //         TVector3 BoostVector_toMuonRestFrame = Zll.BoostVector();
 //         TLorentzVector positiveMuon_newSys;
 //         TLorentzVector positiveMuon_OldSys;
@@ -2977,6 +3257,9 @@ if (data==1) Nsyst_NoConst = 1;
            	    hlheHT_log->Fill(TMath::Log(lheHT) ,genweight);
 				hlheNj->Fill(lheNj ,genweight);
 		        hgen_mass->Fill(gen_mass,genweight);
+                        hgenJetMass->Fill(genJetMass_leading,genweight);
+                        hgenJetMass_matched->Fill(genJetMass_matched,genweight);
+                        
 				if(abs(GenLep_pdgId[0])==11 && abs(GenLep_pdgId[1])==11 )
 				hbinning_MeeJet->Fill(M_ll_cutbin+0.5,lheNj+0.5, genweight);
 				
@@ -3094,12 +3377,12 @@ if (data==1) Nsyst_NoConst = 1;
 //                     std::cout << "tree entries    " << treeMVA->GetEntries() << std::endl;
                         TMVA.Inv_mass=Inv_mass;
                         TMVA.Invariant_MassLog=Invariant_MassLog;
-                        TMVA.X_parton1=log(X_parton1);
-                        TMVA.X_parton2=log(X_parton2);
-                        TMVA.W_mass_virtual1=log(abs(W_mass_virtual1));
-                        TMVA.W_mass_virtual2=log(abs(W_mass_virtual2));
-                        TMVA.W_Pt_virtual1=log(W_Pt_virtual1);
-                        TMVA.W_Pt_virtual2=log(W_Pt_virtual2);
+                        TMVA.X_parton1=X_parton1;
+                        TMVA.X_parton2=X_parton2;
+                        TMVA.W_mass_virtual1=abs(W_mass_virtual1);
+                        TMVA.W_mass_virtual2=abs(W_mass_virtual2);
+                        TMVA.W_Pt_virtual1=W_Pt_virtual1;
+                        TMVA.W_Pt_virtual2=W_Pt_virtual2;
                         TMVA.W_eta_virtual1=W_eta_virtual1;
                         TMVA.W_eta_virtual2=W_eta_virtual2;
                         TMVA.W_phi_virtual1=W_phi_virtual1;
@@ -3126,7 +3409,7 @@ if (data==1) Nsyst_NoConst = 1;
                     TMVA.normalizedDistance_from_mH=normalizedDistance_from_mH;
                     TMVA.ll_mass = Zll_mass;
                     TMVA.diffMassWWH=WWmass-Zll_mass;
-                    TMVA.ll_pt = log(Zll_pt);
+//                     TMVA.ll_pt = log(Zll_pt);
                     TMVA.q1_eta = jets_pv[0].Eta();
                     TMVA.met_pt = met_pt;
                     TMVA.EWKHTsoft = Jet.EWKHTsoft - EWKHTsoft_toSubtract;
@@ -3138,8 +3421,8 @@ if (data==1) Nsyst_NoConst = 1;
 
                     TMVA.cosThetaStar=cosThetaStar;
                     TMVA.cosThetaStarAbs=abs(cosThetaStar);
-                    TMVA.cosThetaPlane = atanh(2.*cosThetaPlane-1.);
-                    TMVA.absCosThetaStarJet = atanh(1.999995*(absCosThetaStarJet-0.5));
+                    TMVA.cosThetaPlane = cosThetaPlane;
+                    TMVA.absCosThetaStarJet = absCosThetaStarJet;
 
                     
                     TMVA.Mqq = Mqq;
@@ -3174,8 +3457,7 @@ if (data==1) Nsyst_NoConst = 1;
                     if(Jet.qgl[jets_indices[0]]<-0.5) std::cout << entry << " \t jets_indices[0]:  " << jets_indices[0] << " \t " << Jet.qgl[jets_indices[0]] << std::endl;
                     if(Jet.qgl[jets_indices[1]]<-0.5) std::cout << entry << " \t jets_indices[1]:  " << jets_indices[1] << " \t " << Jet.qgl[jets_indices[1]] << std::endl;
                     
-                    TMVA.qgl_1qAtanh = atanh(1.999995*(Jet.qgl[jets_indices[0]]-0.5));
-                    TMVA.qgl_2qAtanh = atanh(1.999995*(Jet.qgl[jets_indices[1]]-0.5));
+                    
                     TMVA.softActivityEWK_njets2 = Jet.EWKnsoft2 - EWKnsoft2_toSubtract;
                     TMVA.softActivityEWK_njets5 = Jet.EWKnsoft5 - EWKnsoft5_toSubtract;
                     TMVA.softActivityEWK_njets10 = Jet.EWKnsoft10 - EWKnsoft10_toSubtract;
@@ -3188,7 +3470,7 @@ if (data==1) Nsyst_NoConst = 1;
 //                     TMVA.randomVariable = gRandom->Rndm();
                     TMVA.xSection = xsec[file_tag];
                     MVAcount +=1;
-                    if ( MVAtree_to_fill && MVAcount < MVAcountMAX) treeMVA->Fill();   
+//                     if ( MVAtree_to_fill && MVAcount < MVAcountMAX) treeMVA->Fill();   
 
                     
                     if  ((file_tag.CompareTo("DY0JetsToLL_M")==0) && lheNj == 0) {
@@ -3205,11 +3487,61 @@ if (data==1) Nsyst_NoConst = 1;
                      
 //                         if(atanh((BDT_VBF+1.)/2.)<0.9) continue;
                         
+                        TMVA.BDToutput = BDT_VBF;
+                        
                         hBDT_VBF->Fill(BDT_VBF-0.01,genweight);
                         hBDT_VBF_atanh->Fill(atanh((BDT_VBF+1.)/2.),genweight);
                         hBDT_VBF_atanh_findBinning->Fill(atanh((BDT_VBF+1.)/2.),genweight);
                         
+                        if (atanh((BDT_VBF+1.)/2.) > 0.6 ) hMqq_cut06->Fill(Mqq,genweight);
+                        if (atanh((BDT_VBF+1.)/2.) > 0.8 ) hMqq_cut08->Fill(Mqq,genweight);
+                        if (atanh((BDT_VBF+1.)/2.) > 1.0 ) hMqq_cut10->Fill(Mqq,genweight);
+                        if (atanh((BDT_VBF+1.)/2.) > 1.1721 ) hMqq_cut12->Fill(Mqq,genweight);
+                        
+                        
+                        if (atanh((BDT_VBF+1.)/2.) > 0.6 ) hgenJetMass_cut06->Fill(genJetMass_leading,genweight);
+                        if (atanh((BDT_VBF+1.)/2.) > 0.8 ) hgenJetMass_cut08->Fill(genJetMass_leading,genweight);
+                        if (atanh((BDT_VBF+1.)/2.) > 1.0 ) hgenJetMass_cut10->Fill(genJetMass_leading,genweight);
+                        if (atanh((BDT_VBF+1.)/2.) > 1.2 ) hgenJetMass_cut12->Fill(genJetMass_leading,genweight);
+                        
+                        
+                        if (atanh((BDT_VBF+1.)/2.) > 0.6 ) hminAbsEta_cut06->Fill(minAbsEta,genweight);
+                        if (atanh((BDT_VBF+1.)/2.) > 0.8 ) hminAbsEta_cut08->Fill(minAbsEta,genweight);
+                        if (atanh((BDT_VBF+1.)/2.) > 1.0 ) hminAbsEta_cut10->Fill(minAbsEta,genweight);
+                        if (atanh((BDT_VBF+1.)/2.) > 1.2 ) hminAbsEta_cut12->Fill(minAbsEta,genweight);
+                        
+                        
                     }
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    TMVA.qgl_1qAtanh = atanh(1.999995*(Jet.qgl[jets_indices[0]]-0.5));
+                    TMVA.qgl_2qAtanh = atanh(1.999995*(Jet.qgl[jets_indices[1]]-0.5));
+                    TMVA.cosThetaPlaneAtanh = atanh(2.*cosThetaPlane-1.);
+                    TMVA.absCosThetaStarJetAtanh = atanh(1.999995*(absCosThetaStarJet-0.5));
+                    TMVA.X_parton1Log=log(X_parton1);
+                    TMVA.X_parton2Log=log(X_parton2);
+                    TMVA.W_mass_virtual1Log=log(abs(W_mass_virtual1));
+                    TMVA.W_mass_virtual2Log=log(abs(W_mass_virtual2));
+                    TMVA.W_Pt_virtual1Log=log(W_Pt_virtual1);
+                    TMVA.W_Pt_virtual2Log=log(W_Pt_virtual2);                    
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    
+                    if ( MVAtree_to_fill && MVAcount < MVAcountMAX) treeMVA->Fill();   
+                    
+                    
+                    
+                    
+                    
+                    
 
 //                     std::cout << entry << "\t1:  " << reader->EvaluateMVA("BDTG") << " \t " << TMVA.ll_mass << " \t " << TMVA.Mqq << " \t " << TMVA.RptHard << " \t " << TMVA.DeltaEtaQQ << " \t " << TMVA.ll_pt << " \t " << TMVA.ll_eta << " \t " << TMVA.Jet2q_pt << " \t " << TMVA.EWKHTsoft << std::endl;
 //                     
@@ -3273,8 +3605,24 @@ if (data==1) Nsyst_NoConst = 1;
 
             
             
+            
+            
+/////////////////////////////////////////////// BTAG FILIPPO ////////////////////////////////////////////////////////////////////////////////
+            hBDiscriminator_CSV->Fill(Jet.btagCSV[jets_indices[0]], genweight);
+            hBDiscriminator_CSV->Fill(Jet.btagCSV[jets_indices[1]], genweight);
+            hBDiscriminator_CMVA->Fill(Jet.btagCMVA[jets_indices[0]], genweight);
+            hBDiscriminator_CMVA->Fill(Jet.btagCMVA[jets_indices[1]], genweight);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+       
+       
+            
+            hminAbsEta->Fill(minAbsEta,genweight);
+            hminAbsEta_GEN->Fill(minAbsEta_GEN,genweight);
+            
+       
            hlheNpNLO->Fill(lheNpNLO,genweight);
-
+            hdeltaR1->Fill(deltaR1, genweight);
+            hdeltaR2->Fill(deltaR2, genweight);
            
             hdeltaM->Fill(deltaM,genweight);
             hdeltaMRel->Fill(deltaMRel, genweight);
@@ -3340,6 +3688,10 @@ if (data==1) Nsyst_NoConst = 1;
             hVtype->Fill(v_type,genweight);
             hVtypeSim->Fill(VtypeSim,genweight);
 		   	hMqq->Fill(Mqq,genweight);
+//                         if ((atanh(TMVA.BDToutput+1)/2) > 0.6 ) hMqq_cut06->Fill(Mqq,genweight);
+//                         if ((atanh(TMVA.BDToutput+1)/2) > 0.8 ) hMqq_cut08->Fill(Mqq,genweight);
+//                         if ((atanh(TMVA.BDToutput+1)/2) > 1.0 ) hMqq_cut10->Fill(Mqq,genweight);
+//                         if ((atanh(TMVA.BDToutput+1)/2) > 1.2 ) hMqq_cut12->Fill(Mqq,genweight);
 		   	hMqq_log->Fill(TMath::Log(Mqq),genweight);
 			   hqq_pt->Fill(qq_pt,genweight);
 			   hEtaQQ->Fill(qqDeltaEta,genweight);
@@ -3526,7 +3878,7 @@ if (data==1) Nsyst_NoConst = 1;
 /////////////////////////////////////////////////////////////////// 2D HISTOS ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        std::vector<float> variables_in_2D_plot = {Zll_mass, deltaM, log(X_parton1), log(X_parton2), Rpt, log(Zll_zstar)};
+        std::vector<float> variables_in_2D_plot = {Zll_mass, deltaM/*, log(X_parton1), log(X_parton2)*/, deltaR1, deltaR2, Rpt, log(Zll_zstar), atanh((TMVA.BDToutput+1)/2), genJetMass_leading, genJetMass_matched, Mqq};
 
         
 //         for (int i = 0; i < variables_in_2D_plot.size(); i++) variablesName_in_2D_plot.push_back(getName(variables_in_2D_plot[i]));
