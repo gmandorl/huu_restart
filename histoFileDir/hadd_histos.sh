@@ -45,7 +45,9 @@ cp -f DYJetsToLL_M-105To160-amcatnloFXFX_mu_QCDScale${QCDcorrection}_JES${JEScor
 
 
 
-cp -f WToLNu_2J_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root  WJetsToLNu_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root
+# cp -f WToLNu_2J_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root  WJetsToLNu_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root
+
+hadd -f  WJetsToLNu_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root WToLNu_0J_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root WToLNu_1J_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root WToLNu_2J_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root
 
 
  hadd -f ST_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root   ST_tW_top_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root     ST_tW_antitop_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root     ST_s-channel_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root      ST_t-channel_top_4f_inclusiveDecays_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root     ST_t-channel_antitop_4f_inclusiveDecays_mu_QCDScale${QCDcorrection}_JES${JEScorrection}_v25_reskim.root

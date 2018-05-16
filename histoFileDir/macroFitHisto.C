@@ -75,14 +75,24 @@ void macroFitHisto () {
     
     
     
-        float k_factor_nom      = 0.97476554;
-        float k_factor_QCDup    = 1.0604774     / k_factor_nom;    // I have to divide by k_factor_nom because DY lumi is multiplied by k_factor_nom
-        float k_factor_QCDdown  = 0.91036564    / k_factor_nom;
-        float k_factor_JESup    = 0.81818968    / k_factor_nom;
-        float k_factor_JESdown  = 1.1656951     / k_factor_nom;
+    //      NN 
+//         float k_factor_nom      = 0.97476554;
+//         float k_factor_QCDup    = 1.0604774     / k_factor_nom;    // I have to divide by k_factor_nom because DY lumi is multiplied by k_factor_nom
+//         float k_factor_QCDdown  = 0.91036564    / k_factor_nom;
+//         float k_factor_JESup    = 0.81818968    / k_factor_nom;
+//         float k_factor_JESdown  = 1.1656951     / k_factor_nom;
     
     
-    
+//////////////////// TIGHT PRESELECTION 15 MAY 2018  /////////////////////////////////////////////////////////////////////////
+        float k_factor_nom      = 0.96821916;
+        float k_factor_QCDup    = 1.0551188     / k_factor_nom;    // I have to divide by k_factor_nom because DY lumi is multiplied by k_factor_nom
+        float k_factor_QCDdown  = 0.90215605    / k_factor_nom;
+        float k_factor_JESup    = 0.81042933    / k_factor_nom;
+        float k_factor_JESdown  = 1.1614661     / k_factor_nom;
+
+
+
+
     
     const int Nsyst = 4;
     int Nsyst_NoConst = Nsyst;

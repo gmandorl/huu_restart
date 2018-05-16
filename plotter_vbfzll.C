@@ -344,12 +344,18 @@ int applyQCDScaleWeight = atoi(argv[5]);
 TString QCDScaleWeight_str = std::string(argv[6]);
 int applyJESWeight = atoi(argv[7]);
 TString JESWeight_str = std::string(argv[8]);
-TString heppyVersion = std::string(argv[9]);
-TString postfix = std::string(argv[10]);
-TString output = std::string(argv[11]);
+TString JERWeight_str = std::string(argv[9]);
+TString PUWeight_str = std::string(argv[10]);
+TString heppyVersion = std::string(argv[11]);
+TString postfix = std::string(argv[12]);
+TString output = std::string(argv[13]);
+
+// TString heppyVersion = std::string(argv[9]);
+// TString postfix = std::string(argv[10]);
+// TString output = std::string(argv[11]);
 
 bool MVAtree_to_fill = false;
-if ( ((QCDScaleWeight_str.CompareTo("none")==0)||(QCDScaleWeight_str.CompareTo("nom")==0)) && ((JESWeight_str.CompareTo("none")==0)||(JESWeight_str.CompareTo("nom")==0)) ) MVAtree_to_fill = true;
+if ( ((QCDScaleWeight_str.CompareTo("none")==0)||(QCDScaleWeight_str.CompareTo("nom")==0)) && ((JESWeight_str.CompareTo("none")==0)||(JESWeight_str.CompareTo("nom")==0)) && ((JERWeight_str.CompareTo("none")==0)||(JERWeight_str.CompareTo("nom")==0)) && ((PUWeight_str.CompareTo("none")==0)||(PUWeight_str.CompareTo("nom")==0))) MVAtree_to_fill = true;
 MVAtree_to_fill = true;
 
 std::map <TString, float> xsec;
@@ -679,8 +685,16 @@ if (JESWeight_str.CompareTo("up")==0) whichJESWeight=1;
 if (JESWeight_str.CompareTo("down")==0) whichJESWeight=2;
 
 int whichJERWeight = 0;
-if ((JESWeight_str.CompareTo("up")==0) && (QCDScaleWeight_str.CompareTo("up")==0)) whichJERWeight=1;
-if ((JESWeight_str.CompareTo("down")==0) && (QCDScaleWeight_str.CompareTo("down")==0)) whichJERWeight=2;
+if (JERWeight_str.CompareTo("up")==0) whichJERWeight=1;
+if (JERWeight_str.CompareTo("down")==0) whichJERWeight=2;
+
+int whichPUWeight = 0;
+if (PUWeight_str.CompareTo("up")==0) whichPUWeight=1;
+if (PUWeight_str.CompareTo("down")==0) whichPUWeight=2;
+
+
+// if ((JESWeight_str.CompareTo("up")==0) && (QCDScaleWeight_str.CompareTo("up")==0)) whichJERWeight=1;
+// if ((JESWeight_str.CompareTo("down")==0) && (QCDScaleWeight_str.CompareTo("down")==0)) whichJERWeight=2;
 
 
 float gen_pos=0; 
@@ -766,17 +780,14 @@ float gen_neg_weight=0;
 	TH2F* id_mu_bf = (TH2F*)file_id_mu_bf->Get("TriggerEffMap_MC_NUM_LooseID_DEN_genTracks_PAR_pt_eta");
 	TFile* file_id_mu_aft = TFile::Open("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/nchernya/VBFZll/v25/TriggerEffMap_MC_NUM_LooseID_DEN_genTracks_PAR_pt_eta_RunGH.root");
 	TH2F* id_mu_aft = (TH2F*)file_id_mu_aft->Get("TriggerEffMap_MC_NUM_LooseID_DEN_genTracks_PAR_pt_eta");
-
 	TFile* file_trig_mu_bf = TFile::Open("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/nchernya/VBFZll/v25/TriggerEffMap_IsoMu24_OR_IsoTkMu24_PtEtaBins_RunBCDEF.root");
 	TH2F* trig_mu_bf = (TH2F*)file_trig_mu_bf->Get("TriggerEffMap_IsoMu24_OR_IsoTkMu24_PtEtaBins");
 	TFile* file_trig_mu_aft = TFile::Open("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/nchernya/VBFZll/v25/TriggerEffMap_IsoMu24_OR_IsoTkMu24_PtEtaBins_RunGH.root");
 	TH2F* trig_mu_aft = (TH2F*)file_trig_mu_aft->Get("TriggerEffMap_IsoMu24_OR_IsoTkMu24_PtEtaBins");
-
 	TFile* file_iso_mu_bf = TFile::Open("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/nchernya/VBFZll/v25/TriggerEffMap_LooseISO_LooseID_pt_eta_RunBCDEF.root");
 	TH2F* iso_mu_bf = (TH2F*)file_iso_mu_bf->Get("TriggerEffMap_LooseISO_LooseID_pt_eta");
 	TFile* file_iso_mu_aft = TFile::Open("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/nchernya/VBFZll/v25/TriggerEffMap_LooseISO_LooseID_pt_eta_RunGH.root");
 	TH2F* iso_mu_aft = (TH2F*)file_iso_mu_aft->Get("TriggerEffMap_LooseISO_LooseID_pt_eta");
-
 //	TFile* file_id_el = TFile::Open("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/nchernya/VBFZll/v25/TriggerEffMap_ScaleFactor_MVAIDWP80_80x.root");
 //	TH2F* id_el = (TH2F*)file_id_el->Get("TriggerEffMap_ScaleFactor_MVAIDWP80_80x");
 	TFile* file_tracker_el = TFile::Open("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/nchernya/VBFZll/v25/TriggerEffMap_ScaleFactor_tracker_80x.root");
@@ -785,7 +796,6 @@ float gen_neg_weight=0;
 	TH2F* trig_el = (TH2F*)file_trig_el->Get("TriggerEffMap_Tight27AfterIDISO");
 	TFile* file_id_el = TFile::Open("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/nchernya/VBFZll/v25/TriggerEffMap_EIDISO_ZH.root");
 	TH2F* id_el = (TH2F*)file_id_el->Get("TriggerEffMap_EIDISO_ZH");
-
 	TFile* file_track_mu_bf = TFile::Open("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/nchernya/VBFZll/v25/TriggerEffMap_Muons_trk_SF_RunBCDEF.root");
 	TH1F* track_mu_bf = (TH1F*)file_track_mu_bf->Get("TriggerEffMap_Graph");
 	TFile* file_track_mu_aft = TFile::Open("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/nchernya/VBFZll/v25/TriggerEffMap_Muons_trk_SF_RunGH.root");
@@ -1397,10 +1407,9 @@ Float_t LHE_weights_scale_wgt[10];
 	hsoftleadTrackEta->GetXaxis()->SetTitle("leading s track #eta ");
 	
 	TH1F *hAdJetHT = new TH1F("hAdJetHT","",62,0,500);
-	hAdJetHT->GetXaxis()->SetTitle("additional jets H_{T} (GeV)");
+        hAdJetHT->GetXaxis()->SetTitle("additional jets H_{T} (GeV)");
 
-
-	TH1F *hmet = new TH1F("hmet","",40,0.,250.);
+        TH1F *hmet = new TH1F("hmet","",40,0.,250.);
 	hmet->GetXaxis()->SetTitle("MET p_{T} (GeV)");
 	TH1F *hrho = new TH1F("hrho","",60,0.,30.);
 	hrho->GetXaxis()->SetTitle("rho");
@@ -1543,12 +1552,20 @@ Float_t LHE_weights_scale_wgt[10];
 //         const int binNUmberBDT = 14;
 //         float BDT_bin[binNUmberBDT] = {0,     0.0732,         0.1731,         0.273,  0.3729,         0.4728,         0.5727,         0.6726,         0.7725,         0.8724,        0.9723,         1.0722,         1.1721,         1.5};
         
-        const int binNUmberBDT = 10;
-        float BDT_bin[binNUmberBDT] = {0, 0.17175,        0.32175,        0.47175,        0.62175,        0.77175,        0.92175,      1.07175,         1.22175,        1.5};
+//         const int binNUmberBDT = 10;
+//         float BDT_bin[binNUmberBDT] = {0, 0.17175,        0.32175,        0.47175,        0.62175,        0.77175,        0.92175,      1.07175,         1.22175,        1.5};
+        
+//         const int binNUmberBDT = 10;
+//         float BDT_bin[binNUmberBDT] = {0,         0.16485,        0.31485,        0.46485,        0.61485,        0.76485,        0.91485,        1.06485,     1.21485,         2.5};
+        
+        
+        const int binNUmberBDT = 16;
+        float BDT_bin[binNUmberBDT] = {0,     0.0225,         0.1224,         0.2223,         0.3222,         0.4221,         0.522,  0.6219,         0.7218,         0.8217,        0.9216,         1.0215,         1.1214,         1.2213,         1.3842,         2.5};
         
         
         
-     TH1F *hBDT_VBF_atanh_findBinning = new TH1F("hBDT_VBF_atanh_findBinning","",10000, 0, 1.5);
+        
+     TH1F *hBDT_VBF_atanh_findBinning = new TH1F("hBDT_VBF_atanh_findBinning","",10000, 0, 3);
      hBDT_VBF_atanh_findBinning->GetXaxis()->SetTitle("tanh^{-1}(( BDT output + 1.)/2.) ");
         
     TH1F *hBDT_VBF_atanh = new TH1F("hBDT_VBF_atanh","",binNUmberBDT-1, BDT_bin);
@@ -1963,7 +1980,7 @@ if (data==1) Nsyst_NoConst = 1;
 
 
 
-        TFile fileMVA("mvaTree/main_tmva_tree_"+file_tag+"_v25"+region+"_QCDScale"+QCDScaleWeight_str+"_JES"+JESWeight_str+".root","recreate");
+        TFile fileMVA("mvaTree/main_tmva_tree_"+file_tag+"_v25"+region+"_QCDScale"+QCDScaleWeight_str+"_JES"+JESWeight_str+"_JER"+JERWeight_str+"_PU"+PUWeight_str+".root","recreate");
 
                 
         TMVAstruct TMVA;
@@ -2148,19 +2165,32 @@ if (data==1) Nsyst_NoConst = 1;
         
         
 /////////////////////////VARIABILI APRILE BTDG/////////////////////////////////////////////////////////
-        reader->AddVariable("ll_mass",&TMVA.ll_mass);   
-        reader->AddVariable("MqqLog",&TMVA.MqqLog);
-        reader->AddVariable("Rpt",&TMVA.Rpt);
-//         reader->AddVariable("W_mass_virtual1Log",&TMVA.W_mass_virtual1Log); 
-        reader->AddVariable("W_mass_virtual1",&TMVA.W_mass_virtual1Log); 
-        reader->AddVariable("ll_zstar",&TMVA.ll_zstar);
-        reader->AddVariable("softActivityEWK_njets5",&temp_softActivityEWK_njets5);   // this is float
-        reader->AddVariable("ll_pt",&TMVA.ll_pt);
-//         reader->AddVariable("W_mass_virtual2Log",&TMVA.W_mass_virtual2Log);
-        reader->AddVariable("W_mass_virtual2",&TMVA.W_mass_virtual2Log);
+//         reader->AddVariable("ll_mass",&TMVA.ll_mass);   
+//         reader->AddVariable("MqqLog",&TMVA.MqqLog);
+//         reader->AddVariable("Rpt",&TMVA.Rpt);
+// //         reader->AddVariable("W_mass_virtual1Log",&TMVA.W_mass_virtual1Log); 
+//         reader->AddVariable("W_mass_virtual1",&TMVA.W_mass_virtual1Log); 
+//         reader->AddVariable("ll_zstar",&TMVA.ll_zstar);
+//         reader->AddVariable("softActivityEWK_njets5",&temp_softActivityEWK_njets5);   // this is float
+//         reader->AddVariable("ll_pt",&TMVA.ll_pt);
+// //         reader->AddVariable("W_mass_virtual2Log",&TMVA.W_mass_virtual2Log);
+//         reader->AddVariable("W_mass_virtual2",&TMVA.W_mass_virtual2Log);
         
         
 //         {"ll_mass","MqqLog", "Rpt","W_mass_virtual1Log","ll_zstar","softActivityEWK_njets5", "ll_pt","W_mass_virtual2Log"}
+        
+        
+        
+        
+        /////////////////////////VARIABILI  MAGGIO /////////////////////////////////////////////////////////
+        reader->AddVariable("ll_mass",&TMVA.ll_mass);   
+        reader->AddVariable("MqqLog",&TMVA.MqqLog);
+        reader->AddVariable("Rpt",&TMVA.Rpt);
+        reader->AddVariable("W_mass_virtual1Log",&TMVA.W_mass_virtual1Log); 
+        reader->AddVariable("ll_zstar",&TMVA.ll_zstar);
+        reader->AddVariable("softActivityEWK_njets5",&temp_softActivityEWK_njets5);   // this is float
+        reader->AddVariable("ll_pt",&TMVA.ll_pt);
+        
         
         
 /////////////////////////VARIABILI APRILE MLP/////////////////////////////////////////////////////////
@@ -2266,12 +2296,18 @@ if (data==1) Nsyst_NoConst = 1;
 //         reader->BookMVA("BDTG", "/afs/cern.ch/user/a/abonavit/private/tesi/CMSSW_8_0_28/src/code/BDTClassification/trainingForRecoveringJune/Classification_BDTG.weights_JuneOption_ll_mass_Mqq_RptHard_DeltaEtaQQ_llPt_llEta_Jet2qPt_EWKHTsoft.xml");
 //         reader->BookMVA("BDTG", "/afs/cern.ch/user/a/abonavit/private/tesi/CMSSW_8_0_28/src/code/BDTClassification/januaryTraining/Classification_BDTG.weights_80000Event_200Tree_4Deep_mll_Mqq_RptHard_llZstar_softN5_llPt_Wmass2_Wpt1.xml");
 //         reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/marchTraining/Classification_BDTG.weights_80000Event_100Tree_2Deep_mll_Mqq_RptHard_llZstar_softN5_Wmass1.xml");
-        reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_Wmass1_llZstar_softN5_llPt_Wmass2.xml");
+//         reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_Wmass1_llZstar_softN5_llPt_Wmass2.xml");
+
+
 //         reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_llZstar_softN5_llPt_qgl1qAtanh.xml");
 //         reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_llZstar_softN5_llPt_qgl1qAtanh_Wmass1.xml");
 
 //             reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/mayTraining/Classification_BDTG.weights_35000Event_100Tree_2Deep_mll_MqqLog_Rpt_Wmass1_llZstar_softN5_llPt_Wmass2.xml");
 
+        
+//             reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/mayTraining/Classification_BDTG_1377SeedGen.weights_30000Event_100Tree_2Deep_mll_MqqLog_Rpt_Wmass1_llZstar_softN5_llPt.xml");
+            reader->BookMVA("BDTG", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/mayTraining/Classification_BDTG_1477SeedGen.weights_30000Event_100Tree_2Deep_SigCirca1_mll_MqqLog_Rpt_Wmass1_llZstar_softN5_llPt.xml");
+                
 //         reader->BookMVA("MLP", "/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/BDTxml/aprilTraining/Classification_MLP.weights_35000Event_mll_MqqLog_Rpt_Wmass1_llZstar_softN5_llPt_Wmass2_qgl1qAtanh.xml");
 
     }  
@@ -2415,7 +2451,11 @@ if (data==1) Nsyst_NoConst = 1;
 	
 	
 		if (data==1) PU=1.;
-		else PU=puweight;
+		else {
+                    if ((PUWeight_str.CompareTo("none")==0)||(PUWeight_str.CompareTo("nom")==0))    PU=puweight;
+                    if (PUWeight_str.CompareTo("up")==0)                                            PU=puweightUp;
+                    if (PUWeight_str.CompareTo("down")==0)                                          PU=puweightDown;
+                }
 		genweight0 = genweight/TMath::Abs(genweight);
 		genweight=genweight/TMath::Abs(genweight)*PU;   
 // 		cout << "PU  " << PU << " \t   genweight     " << genweight << endl; 
@@ -2675,7 +2715,6 @@ if (data==1) Nsyst_NoConst = 1;
 			}
 		}
 		lepton2.SetPtEtaPhiM(vLeptons_pt[idx_2ndLepton], vLeptons_eta[idx_2ndLepton], vLeptons_phi[idx_2ndLepton], vLeptons_mass[idx_2ndLepton]);
-
 		float qter1 = 1.0;
 		float qter2 = 1.0;
 		float mu_correction1 = 1.0;
@@ -2997,9 +3036,9 @@ if (data==1) Nsyst_NoConst = 1;
                     deltaR1 = deltaR_tmp;
                     indexFisrtJet = n;
                 }
-            }
-            
-            deltaR_tmp = 100;
+}
+
+deltaR_tmp = 100;
            for (int n=0; n < genJetsWithoutLeptonsP4.size(); n++) {
                 if (indexFisrtJet==n) continue;
                 deltaR_tmp = genJetsWithoutLeptonsP4[n].DeltaR(Qjet2);
@@ -3291,7 +3330,6 @@ if (data==1) Nsyst_NoConst = 1;
            }
            else genweight=0;
            }
-
 /*/
 
 //---------------------STITCHING------------------------------------------------------------
@@ -3425,6 +3463,24 @@ if (data==1) Nsyst_NoConst = 1;
                     TMVA.absCosThetaStarJet = absCosThetaStarJet;
 
                     
+                    
+                                        
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    TMVA.qgl_1qAtanh = atanh(1.999995*(Jet.qgl[jets_indices[0]]-0.5));
+                    TMVA.qgl_2qAtanh = atanh(1.999995*(Jet.qgl[jets_indices[1]]-0.5));
+                    TMVA.cosThetaPlaneAtanh = atanh(2.*cosThetaPlane-1.);
+                    TMVA.absCosThetaStarJetAtanh = atanh(1.999995*(absCosThetaStarJet-0.5));
+                    TMVA.X_parton1Log=log(X_parton1);
+                    TMVA.X_parton2Log=log(X_parton2);
+                    TMVA.W_mass_virtual1Log=log(abs(W_mass_virtual1));
+                    TMVA.W_mass_virtual2Log=log(abs(W_mass_virtual2));
+                    TMVA.W_Pt_virtual1Log=log(W_Pt_virtual1);
+                    TMVA.W_Pt_virtual2Log=log(W_Pt_virtual2);                    
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    
+                    
+                    
+                    
                     TMVA.Mqq = Mqq;
                     TMVA.MqqLog = log(Mqq);
                     
@@ -3523,7 +3579,7 @@ if (data==1) Nsyst_NoConst = 1;
                     
                     
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    TMVA.qgl_1qAtanh = atanh(1.999995*(Jet.qgl[jets_indices[0]]-0.5));
+/*                    TMVA.qgl_1qAtanh = atanh(1.999995*(Jet.qgl[jets_indices[0]]-0.5));
                     TMVA.qgl_2qAtanh = atanh(1.999995*(Jet.qgl[jets_indices[1]]-0.5));
                     TMVA.cosThetaPlaneAtanh = atanh(2.*cosThetaPlane-1.);
                     TMVA.absCosThetaStarJetAtanh = atanh(1.999995*(absCosThetaStarJet-0.5));
@@ -3532,7 +3588,7 @@ if (data==1) Nsyst_NoConst = 1;
                     TMVA.W_mass_virtual1Log=log(abs(W_mass_virtual1));
                     TMVA.W_mass_virtual2Log=log(abs(W_mass_virtual2));
                     TMVA.W_Pt_virtual1Log=log(W_Pt_virtual1);
-                    TMVA.W_Pt_virtual2Log=log(W_Pt_virtual2);                    
+                    TMVA.W_Pt_virtual2Log=log(W_Pt_virtual2);  */                  
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     
                     if ( MVAtree_to_fill && MVAcount < MVAcountMAX) treeMVA->Fill();   
@@ -4026,7 +4082,7 @@ if (data==1) Nsyst_NoConst = 1;
 ///////////////////////////////////// Writing the output file  ////////////////////////////
 
 		//cout << "Number of events that passed the perselection: " << counter<<endl;
-		TFile file(output+"/"+file_tag+"_"+region+"_QCDScale"+QCDScaleWeight_str+"_JES"+JESWeight_str+"_"+heppyVersion+"_"+postfix+".root","recreate");
+		TFile file(output+"/"+file_tag+"_"+region+"_QCDScale"+QCDScaleWeight_str+"_JES"+JESWeight_str+"_JER"+JERWeight_str+"_PU"+PUWeight_str+"_"+heppyVersion+"_"+postfix+".root","recreate");
 // 		TFile file(output+"/"+file_tag+"_"+region+"_QCDScale"+QCDScaleWeight_str+"_JES"+JESWeight_str+"_"+heppyVersion+"_"+postfix+"_noQGLcorrection.root","recreate");
 
 
@@ -4088,7 +4144,7 @@ if (data==1) Nsyst_NoConst = 1;
     		file.Write();
     		file.Close();
 
-	 ofstream out(output+"/"+file_tag+"_"+region+"_QCDScale"+QCDScaleWeight_str+"_JES"+JESWeight_str+"_"+heppyVersion+"_"+postfix+".txt");
+	 ofstream out(output+"/"+file_tag+"_"+region+"_QCDScale"+QCDScaleWeight_str+"_JES"+JESWeight_str+"_JER"+JERWeight_str+"_PU"+PUWeight_str+"_"+heppyVersion+"_"+postfix+".txt");
 	out<< "positive pure selected = "<<gen_pos<<"  , positive weighted selected =  "<<gen_pos_weight<<" , negative pure selected = "<<gen_neg<< ", negative weighted selected = "<<gen_neg_weight<< ", all evetns in the begining = "<<events_generated<<" , xsec = "<<xsec[file_tag]<<endl;
 	out<<"positive weight in so many events : "<<  pos_weight_presel<<endl;
 

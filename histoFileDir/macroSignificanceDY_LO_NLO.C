@@ -81,8 +81,8 @@ void macroSignificanceDY_LO_NLO () {
     hDYNLO->SetLineWidth(2);
 
 
-    float DY_normalization = 6071.;
-//     float DY_normalization = 3420.8;
+//     float DY_normalization = 6071.;
+    float DY_normalization = 3420.8;
     hHmumu->Scale(8.4/hHmumu->Integral());
     hDY_LO->Scale(DY_normalization/hDY_LO->Integral());
     hDYNLO->Scale(DY_normalization/hDYNLO->Integral());
@@ -121,7 +121,7 @@ void macroSignificanceDY_LO_NLO () {
     
     hDYNLO->Draw();
     hHmumu->Draw("same");
-    hDY_LO->Draw("same");
+    hDY_LO->Draw("text same");
     
     myLegend->Draw();
     
