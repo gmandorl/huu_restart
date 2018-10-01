@@ -145,14 +145,20 @@ int set_type=atoi(argv[1]); // 0 - analysis, 1 - control region , top
 
 
 const int nfiles  = 10; //9;  //11;
+// const int nfiles  = 8; //9;  //11;
+
 //TString leg_names[nfiles] = {"Data","VBF Z #rightarrow ll (#times 10)","WW + jets","ZZ + jets","WZ + jets", "t#bar{t}", "Z + jets"};
 //TString leg_names[nfiles] = {"Data","tZq #rightarrow ll","TTZ #rightarrow ll #nu#nu","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "Z + jets","VBF Z #rightarrow ll"};
 
 //TString leg_names[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "Z + jets (MDG)","VBF Z #rightarrow ll"};
 //TString leg_names[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "Z + jets (AMC)","VBF Z #rightarrow ll"};
 
-TString leg_names[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "Z + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
-TString leg_names_2000[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "Z + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+TString leg_names[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DY + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+TString leg_names_2000[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DY + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+
+// TString leg_names[nfiles] = {"Data","W(l#nu) + jets","WW + jets","Single Top", "t#bar{t}", "Z + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+// TString leg_names_2000[nfiles] = {"Data","W(l#nu) + jets","WW + jets","Single Top", "t#bar{t}", "Z + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+
 
 //---------------------------------------------------------------------------------------------------------------------- OK
 /// change EWK to VBF bla
@@ -202,6 +208,15 @@ TString file_names_JESdown[nfiles] ={"SingleMuon","WJetsToLNu","WW","ZZ","WZ","S
 
 
 
+// TString file_names[nfiles] =        {"SingleMuon","WJetsToLNu","WW","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDup[nfiles] =  {"SingleMuon","WJetsToLNu","WW","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDdown[nfiles] ={"SingleMuon","WJetsToLNu","WW","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESup[nfiles] =  {"SingleMuon","WJetsToLNu","WW","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESdown[nfiles] ={"SingleMuon","WJetsToLNu","WW","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+
+
+
+
 int bg_begin;
 int qcd_begin=18;
  bg_begin=1;
@@ -212,10 +227,17 @@ int LINESTYLE[nfiles] = {1,1,1,1,1,1,1,1,1,2};
 int LINEWIDTH[nfiles] = {1,1,1,1,1,1,1,1,3,3};
 int FILLSTYLE[nfiles] = {1001,1001,1001,1001,1001,1001,1001,1001,1001,1001};
 
+// int FILLCOLOR[nfiles] = {1,kSpring+7,kSpring+8, kAzure+1,kBlue-4,kOrange-2,kRed-4,kMagenta+1};
+// int LINECOLOR[nfiles] = {1,kSpring+7,kSpring+8,kAzure+1,kBlue-4,kOrange-2,kRed-4,kMagenta+1};
+// int LINESTYLE[nfiles] = {1,1,1,1,1,1,1,2};
+// int LINEWIDTH[nfiles] = {1,1,1,1,1,1,3,3};
+// int FILLSTYLE[nfiles] = {1001,1001,1001,1001,1001,1001,1001,1001};
+
 
 	
 //int order[nfiles] = {0,1,2,3,4,5,6,7,8,9,10};// number in file_names array as they should appear in the legend
 int order[nfiles] = {0,1,2,3,4,5,6,7,8,9};// number in file_names array as they should appear in the legend
+// int order[nfiles] = {0,1,2,3,4,5,6,7};// number in file_names array as they should appear in the legend
 int order_legend[nfiles]; 
 for (int i=0;i<nfiles;i++){
 	order_legend[order[i]]=i;
@@ -237,29 +259,48 @@ for (int i=0;i<nfiles;i++){
 	file_names_JESdown[i] = file_names[i];
 
 
-        if (i==0) file_names[i].Append("_QCDScalenom_JESnom_v25_reskim");
-// 	if (i!=0) {
+//         if (i==0) file_names[i].Append("_QCDScalenom_JESnom_v25_reskim");
+//     	if (i!=0) {
 // 		file_names[i].Append("_QCDScalenom_JESnom_v25_reskim");
-// 		file_names_QCDup[i].Append("_QCDScalenom_JESnom_v25_reskim");
-// 		file_names_QCDdown[i].Append("_QCDScalenom_JESnom_v25_reskim");
-// 		file_names_JESup[i].Append("_QCDScalenom_JESnom_v25_reskim");
-// 		file_names_JESdown[i].Append("_QCDScalenom_JESnom_v25_reskim");
+// 		file_names_QCDup[i].Append("_QCDScaleup_JESnom_v25_reskim");
+// 		file_names_QCDdown[i].Append("_QCDScaledown_JESnom_v25_reskim");
+// 		file_names_JESup[i].Append("_QCDScalenom_JESup_v25_reskim");
+// 		file_names_JESdown[i].Append("_QCDScalenom_JESdown_v25_reskim");
+// 	}
+
+	
+//         if (i==0) file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_v25_reskim");
+//     	if (i!=0) {
+// 		file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_v25_reskim");
+// 		file_names_QCDup[i].Append("_QCDScaleup_JESnom_JERnom_PUnom_v25_reskim");
+// 		file_names_QCDdown[i].Append("_QCDScaledown_JESnom_JERnom_PUnom_v25_reskim");
+// 		file_names_JESup[i].Append("_QCDScalenom_JESup_JERnom_PUnom_v25_reskim");
+// 		file_names_JESdown[i].Append("_QCDScalenom_JESdown_JERnom_PUnom_v25_reskim");
 // 	}
 	
+//         if (i==0) file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2017");
+//     	if (i!=0) {
+// 		file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2017");
+// 		file_names_QCDup[i].Append("_QCDScaleup_JESnom_JERnom_PUnom_nano_2017");
+// 		file_names_QCDdown[i].Append("_QCDScaledown_JESnom_JERnom_PUnom_nano_2017");
+// 		file_names_JESup[i].Append("_QCDScalenom_JESup_JERnom_PUnom_nano_2017");
+// 		file_names_JESdown[i].Append("_QCDScalenom_JESdown_JERnom_PUnom_nano_2017");
+// 	}
+	
+        if (i==0) file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2016");
     	if (i!=0) {
-		file_names[i].Append("_QCDScalenom_JESnom_v25_reskim");
-		file_names_QCDup[i].Append("_QCDScaleup_JESnom_v25_reskim");
-		file_names_QCDdown[i].Append("_QCDScaledown_JESnom_v25_reskim");
-		file_names_JESup[i].Append("_QCDScalenom_JESup_v25_reskim");
-		file_names_JESdown[i].Append("_QCDScalenom_JESdown_v25_reskim");
+		file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2016");
+		file_names_QCDup[i].Append("_QCDScaleup_JESnom_JERnom_PUnom_nano_2016");
+		file_names_QCDdown[i].Append("_QCDScaledown_JESnom_JERnom_PUnom_nano_2016");
+		file_names_JESup[i].Append("_QCDScalenom_JESup_JERnom_PUnom_nano_2016");
+		file_names_JESdown[i].Append("_QCDScalenom_JESdown_JERnom_PUnom_nano_2016");
 	}
 	
-
 	
 	
 	
 	
-
+	
 //	if (i==0) file_names[i].Append("_QCDScalenom_JESnom_v25_bdt_alldata4_qglweightsnorm_reminiaod");
 //	if (i!=0) {
 //		file_names[i].Append("_QCDScalenom_JESnom_v25_bdt_alldata4_qglweightsnorm_reminiaod");
@@ -292,6 +333,7 @@ TString dir_name= "plotsDirectory";
 dir_name.Append("/");
 //TString dir_name = "plots_amc/";
 Float_t lumi = 35900;
+// Float_t lumi = 41000;
 
 
 
@@ -334,8 +376,8 @@ TString hist_names[nhistos]={"hMqq", "hZll_mass", "hSelectionCuts","hdeltaM", "h
 
 
 
-const int nhistos =121 ; //79 //40//52
-TString hist_names[nhistos]={"hMqq", "hZll_mass", "hEtaQQ","hHTsoftEWK","hSoft_n2EWK","hSoft_n5EWK","hSoft_n10EWK","hPVs", "hJet1q_pt", "hJet1q_eta", "hJet1q_phi", "hJet2q_phi", "hJet1q_ptd", "hJet1q_axis2", "hJet1q_mult", "hJet2q_pt", "hJet2q_eta", "hJet2q_ptd", "hJet2q_axis2", "hJet2q_mult", "hmet",   "hJet1q_leadTrackPt", "hJet2q_leadTrackPt", "hqq_pt", "hqgl", "hqgl2", "hqglAtanh", "hqgl2Atanh", "hZll_pt", "hZll_phi", "hZll_eta",  "hrho", "hlepton1_pt", "hlepton2_pt", "hlepton1_eta", "hlepton2_eta","hlepton1_iso03", "hlepton2_iso03", "hDeltaRelQQ", "hRpt", "hRptAtanh", "hEtaQQSum", "hPhiZQ1", "hZll_y", "hZll_ystar", "hZll_zstar", "hMqq_log", "hlheV_pt","hPhiQQ", "hJets12_pt","hJets12_pt_log", "hJet1q_pt_log", "hJet2q_pt_log", "hHT","hlheHT_log", "hlheNj", "hNAdJets", "hJet3_pt", "hJet3_pt_log", "hsoftleadTrackEta", "hAdJetHT", "hJet3_eta", "hJet3_pt_new", "hMaxJetBTagCSV", "hBDiscriminator_CSV", "hBDiscriminator_CMVA","hVirtual_Pt1","hVirtual_Pt2","hVirtual_Pt1_log", "hVirtual_Pt2_log", "hgen_mass", "hgenJetMass",  "hMaxJetBTagCMVA","hthetastar_W1","hthetastar_W2", "hMaxSecondJetBTagCMVA", "hMaxSecondJetBTagCSV","hVirtual_eta1","hVirtual_eta2", "hThetaStarJet", "hThetaPlanes", "hThetaStar", "hThetaStarJetAtanh", "hThetaPlanesAtanh","hDiffmass", "hThetaStarAbs","hTheta_HiggsJ1","hTheta_HiggsJ2","hthetastar_W2toHW1","hthetastar_W1toHW2","hthetastar_HtoWW", "hmumujj_pt", "hmumujj_pt", "hmumujj_ptLog", "hEnergy_fraction_Parton1_log", "hdeltaR1", "hdeltaR2",  "hEnergy_fraction_Parton2_log","hdeltaM", "hdeltaMRel", "hTotalEnergy","hTotalEnergylog","hVirtual_phi1","hVirtual_phi2","hWWmass", "hEnergy_fraction_Parton1","hPz","hPzAbs", "hPzAbsLog","hVirtual_Wmass1","hVirtual_Wmass2", "hVirtual_Wmass1_log", "hVirtual_Wmass2_log",  "hInvariant_MassLog","hInvariant_Mass" , "hEnergy_fraction_Parton2",  "hNNplusBDT_atanh", "hNNoutput" , "hNNoutput_atanh", "hBDT_VBF" , "hBDT_VBF_atanh"};
+const int nhistos =137; //79 //40//52
+TString hist_names[nhistos]={"hMqq", "hZll_mass"/*, "hHll_mass_precise", "hHll_mass_unprecise"*/, "hEtaQQ","hHTsoftEWK", "hPtSoftJets","hSoft_n2EWK","hSoft_n5EWK","hSoft_n10EWK","hPVs", "hJet1q_pt", "hJet1q_eta", "hJet1q_phi", "hJet2q_phi", "hJet1q_ptd", "hJet1q_axis2", "hJet1q_mult", "hJet2q_pt", "hJet2q_eta", "hJet2q_ptd", "hJet2q_axis2", "hJet2q_mult", "hmet",   "hJet1q_leadTrackPt", "hJet2q_leadTrackPt", "hqq_pt", "hqgl", "hqgl2", "hqglAtanh", "hqgl2Atanh", "hZll_pt", "hZll_phi", "hZll_eta",  "hrho", "hlepton1_pt", "hlepton2_pt", "hlepton1_eta", "hlepton2_eta","hlepton1_iso03", "hlepton2_iso03", "hDeltaRelQQ", "hRpt", "hRptAtanh", "hEtaQQSum", "hPhiZQ1", "hPhiZQ2", "hEtaHQ1", "hEtaHQ2", "hZll_y", "hZll_ystar", "hZll_zstar", "hZll_zstar_log", "hMqq_log", "hlheV_pt","hPhiQQ", "hJets12_pt","hJets12_pt_log", "hJet1q_pt_log", "hJet2q_pt_log", "hHT","hlheHT_log", "hlheNj", "hNAdJets", "hJet3_pt", "hJet3_pt_log", "hsoftleadTrackEta", "hAdJetHT", "hJet3_eta", "hJet3_pt_new", "hMaxJetBTagCSV", "hBDiscriminator_CSV", "hBDiscriminator_CMVA","hVirtual_Pt1","hVirtual_Pt2","hVirtual_Pt1_log", "hVirtual_Pt2_log", "hgen_mass", "hgenJetMass",  "hMaxJetBTagCMVA","hthetastar_W1","hthetastar_W2", "hMaxSecondJetBTagCMVA", "hMaxSecondJetBTagCSV","hVirtual_eta1","hVirtual_eta2", "hThetaStarJet", "hThetaPlanes", "hThetaStar", "hThetaStarJetAtanh", "hThetaPlanesAtanh","hDiffmass", "hIsolatedElectrons", "hThetaStarAbs","hTheta_HiggsJ1","hTheta_HiggsJ2","hthetastar_W2toHW1","hthetastar_W1toHW2","hthetastar_HtoWW", "hmumujj_pt", "hmumujj_pt", "hmumujj_ptLog", "hEnergy_fraction_Parton1_log", "hdeltaR1", "hdeltaR2",  "hEnergy_fraction_Parton2_log","hdeltaM", "hdeltaMRel", "hTotalEnergy","hTotalEnergylog","hVirtual_phi1","hVirtual_phi2","hWWmass", "hEnergy_fraction_Parton1","hPz","hPzAbs", "hPzAbsLog","hVirtual_Wmass1","hVirtual_Wmass2", "hVirtual_Wmass1_log", "hVirtual_Wmass2_log",  "hInvariant_MassLog","hInvariant_Mass" , "hEnergy_fraction_Parton2",  /*"hNNplusBDT_atanh", "hNNoutput" , "hNNoutput_atanh",*/ "hBDT_VBF_atanh_m125_Rpt0", "hBDT_VBF_atanh_m125_WM1Log5", "hBDT_VBF_atanh_m125_zStar0", "hBDT_VBF_atanh_m125_ptll300", "hBDT_VBF_atanh_m125_softN50", "hBDT_VBF_atanh_m125_MqqLog75", "hBDT_VBF_atanh_m125_onlyMqq", "hBDT_VBF_atanh_m125_onlyRpt", "hBDT_VBF_atanh_m125_onlyWM1", "hBDT_VBF_atanh_m125_onlyzStar", "hBDT_VBF_atanh_m125_onlyptll", "hBDT_VBF_atanh_m125_onlysoftN5", "hBDT_VBF_atanh_m125ForAll", "hBDT_VBF" , "hBDT_VBF_atanh"};
 
 
 
@@ -563,7 +605,7 @@ for (int counter_ratio=0; counter_ratio < 5;counter_ratio++) {
     ratio[counter_ratio] = tmp_ratio;
     ratioError[counter_ratio] = DYError/DYint*ratio[counter_ratio];
 //     ratio[counter_ratio] = 1.;
-    if(counter_ratio == 0)  cout << "ratio  "  << counter_ratio << " : " << ratio[0] <<   " \t\t DYint : " << DYint <<   " \t\t MCint : " << MCint  <<   " \t\t dataInt : " << dataInt << endl;
+    if(counter_ratio == 0)  out_efficiency << "ratio  "  << counter_ratio << " : " << ratio[0] <<   " \t\t DYint : " << DYint <<   " \t\t MCint : " << MCint  <<   " \t\t dataInt : " << dataInt << endl;
 
 
 }
@@ -597,7 +639,8 @@ for (int fileIterator = 0; fileIterator < nfiles; fileIterator++) {
 		histos[hist] = (TH1F*)file_initial->Get(hist_names[hist])->Clone("h");
                 if(file_name_tag.find("DYJetstoLL")!=std::string::npos)   histos_check[hist] = (TH1F*)file_initial->Get(hist_names[hist])->Clone("h");
                     
-                
+                double bkgIntegralErrorForBUG = 0;
+//                 if (hist<3) out_efficiency<< "search for bug 0 " << leg_names[order[fileIterator]]<<"\t\t\t"<< std::setprecision(8)<<histos[hist]->IntegralAndError(1,histos[hist]->GetNbinsX(), bkgIntegralErrorForBUG) << " +- " << bkgIntegralErrorForBUG  <<endl;
 
 
                 if (fileIterator==0) {
@@ -605,13 +648,15 @@ for (int fileIterator = 0; fileIterator < nfiles; fileIterator++) {
                     add_underFlow_overFlow(data_histos[hist]);
                     
                 }
+//                 if (hist<3) out_efficiency<< "search for bug 1 " << leg_names[order[fileIterator]]<<"\t\t\t"<< std::setprecision(8)<<histos[hist]->IntegralAndError(1,histos[hist]->GetNbinsX(), bkgIntegralErrorForBUG) << " +- " << bkgIntegralErrorForBUG  <<endl;
 		if (fileIterator>0)histos[hist]->Scale(lumi); 
-
+//                 if (hist<3) out_efficiency<< "search for bug 2 " << leg_names[order[fileIterator]]<<"\t\t\t"<< std::setprecision(8)<<histos[hist]->IntegralAndError(1,histos[hist]->GetNbinsX(), bkgIntegralErrorForBUG) << " +- " << bkgIntegralErrorForBUG  <<endl;
 		if (file_name_tag.find("DYJetstoLL")!=std::string::npos)  histos[hist]->Scale(ratio[0]);  
 //                 if ((file_name_tag.find("HToMuMu")==std::string::npos) && (file_name_tag.find("SingleMuon")==std::string::npos))  histos[hist]->Scale(ratio[0]);  
                 
                 
-                
+
+
                 
                 
                 add_underFlow_overFlow(histos[hist]);
@@ -769,10 +814,10 @@ out_efficiency.close();
 
 std::cout << "drawing 2D histos" << std::endl;
 
-for(int n=0; n<hist2D_names.size(); n++) {
-
-draw2Dhistos(h2Dhistos_DY[n], h2Dhistos_VBF[n], hist2D_names[n]);
-}
+// for(int n=0; n<hist2D_names.size(); n++) {
+// 
+// draw2Dhistos(h2Dhistos_DY[n], h2Dhistos_VBF[n], hist2D_names[n]);
+// }
 std::cout << "finished drawing 2D histos" << std::endl;
 
 
@@ -787,10 +832,10 @@ for (int fileIterator = 1; fileIterator < nfiles; fileIterator++) {
 
 	TFile *file_initial_up;		
 	string file_name_tag = file_names_QCDup[fileIterator].Data();
-  	if (file_name_tag.find("ST_")!=std::string::npos) {
-		file_names_QCDup[fileIterator] = file_names[fileIterator];
-		string file_name_tag = file_names_QCDup[fileIterator].Data();
-	}
+// // // // // //   	if (file_name_tag.find("ST_")!=std::string::npos) {  // this lines are useless
+// // // // // // 		file_names_QCDup[fileIterator] = file_names[fileIterator];
+// // // // // // 		string file_name_tag = file_names_QCDup[fileIterator].Data();
+// // // // // // 	}
    file_initial_up = TFile::Open(file_names_QCDup[fileIterator]);
 //	cout<<file_names_QCDup[fileIterator] <<endl;
 	TH1F *histos_QCDup[nhistos];
@@ -1121,7 +1166,7 @@ for (int i=0;i<nhistos;i++){
 		frame->SetMinimum(0.1);
                 
                 frame->SetMaximum(std::max(data_histos[i]->GetMaximum()*1.2,sum_histos[i]->GetMaximum()*1.2) );
-                frame->SetMaximum(1);
+//                 frame->SetMaximum(1);
 		if (LOGY==true) {
 			gPad->SetLogy();	
                         frame->SetMaximum(std::max(data_histos[i]->GetMaximum()*100,sum_histos[i]->GetMaximum()*100) );
@@ -1164,36 +1209,50 @@ for (int i=0;i<nhistos;i++){
 
                 float totalSensitivity=0.;
                 if (hist_names[i].CompareTo("hZll_mass")==0) {
+//                 if (hist_names[i].CompareTo("NOhZllMASS")==0) {
                     TH1F *h_below_115 = (TH1F*)data_histos[i]->Clone("Mll_below_115");
                     TH1F *h_above_130 = (TH1F*)data_histos[i]->Clone("Mll_above_130");
                     
-                    h_below_115->GetXaxis()->SetRangeUser(90,115);
-                    h_above_130->GetXaxis()->SetRangeUser(130,160);
+                    h_below_115->GetXaxis()->SetRangeUser(110,115);
+                    h_above_130->GetXaxis()->SetRangeUser(130,145);
                     std::cout << "HERE---------------------------------------------------------------------------------------------------------------------------" << std::endl;
 
-//                     int  Mll_min_not_to_plot = data_histos[i]->GetXaxis()->FindBin(115);
-//                     int  Mll_max_not_to_plot = data_histos[i]->GetXaxis()->FindBin(130);
-//             
-//                     for (int binIterator = Mll_min_not_to_plot; binIterator <= Mll_max_not_to_plot; binIterator++)
-//                         data_histos[i]->SetBinContent(binIterator ,1000000000.);  
-                
+
                     
                     h_below_115->Draw("Psame");
                     h_above_130->Draw("Psame");
                 }
                 else {
-                    if ((hist_names[i].CompareTo("hNNoutput")!=0) && (hist_names[i].CompareTo("hNNplusBDT_atanh")!=0) && (hist_names[i].CompareTo("hNNoutput_atanh")!=0) && (hist_names[i].CompareTo("hBDT_VBF")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh")!=0)) data_histos[i]->Draw("Psame");
+                    if ((hist_names[i].CompareTo("hNNoutput")!=0) && (hist_names[i].CompareTo("hNNplusBDT_atanh")!=0) && (hist_names[i].CompareTo("hNNoutput_atanh")!=0) && (hist_names[i].CompareTo("hBDT_VBF")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125ForAll")!=0) && (hist_names[i].CompareTo("hZll_mass")!=0) && (hist_names[i].CompareTo("hHll_mass_precise")!=0) && (hist_names[i].CompareTo("hHll_mass_unprecise")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_Rpt0")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_WM1Log5")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_zStar0")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_ptll300")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_softN50")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_MqqLog75")!=0)) data_histos[i]->Draw("Psame");
+                    
+                    
+                    
                     
                     if (hist_names[i].CompareTo("hBDT_VBF")==0) {
-                        data_histos[i]->GetXaxis()->SetRangeUser(0.,0.5);
+                        data_histos[i]->GetXaxis()->SetRangeUser(-1.,0.2);
                         data_histos[i]->Draw("Psame");
                     }
 
                     if (hist_names[i].CompareTo("hBDT_VBF_atanh")==0) {
-                        data_histos[i]->GetXaxis()->SetRangeUser(0.,1.);
+                        data_histos[i]->GetXaxis()->SetRangeUser(0.,0.5);
                         data_histos[i]->Draw("Psame");
                     }
-
+                    
+                    if (hist_names[i].CompareTo("hBDT_VBF_atanh_m125ForAll")==0) {
+//                         data_histos[i]->GetXaxis()->SetRangeUser(0.,1.2);
+                        data_histos[i]->Draw("Psame");
+                    }
+                    
+                    if (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_zStar0")==0) {
+                        data_histos[i]->GetXaxis()->SetRangeUser(0.,0.9);
+                        data_histos[i]->Draw("Psame");
+                    }
+                    
+                    if ((hist_names[i].CompareTo("hBDT_VBF_atanh_m125_Rpt0")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_WM1Log5")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_ptll300")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_softN50")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_MqqLog75")==0))  {
+//                         data_histos[i]->GetXaxis()->SetRangeUser(0.,1.2);
+                        data_histos[i]->Draw("Psame");
+                    }
+                    
                     if (hist_names[i].CompareTo("hNNoutput")==0) {
                         data_histos[i]->GetXaxis()->SetRangeUser(0.,0.5);
                         data_histos[i]->Draw("Psame");
@@ -1227,7 +1286,8 @@ for (int i=0;i<nhistos;i++){
                         
                         
                         
-                if ((hist_names[i].CompareTo("hNNoutput")==0) || (hist_names[i].CompareTo("hNNplusBDT_atanh")==0) || (hist_names[i].CompareTo("hNNoutput_atanh")==0) || (hist_names[i].CompareTo("hBDT_VBF")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh")==0)) {
+//                 if ((hist_names[i].CompareTo("hNNoutput")==0) || (hist_names[i].CompareTo("hNNplusBDT_atanh")==0) || (hist_names[i].CompareTo("hNNoutput_atanh")==0) || (hist_names[i].CompareTo("hBDT_VBF")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh")==0)) {
+                if ((hist_names[i].CompareTo("hNNoutput_atanh")==0) ) {
                     float totalSensitivitySquared=0.;   
                     float totalSensitivitySquaredErrorSquared = 0.;
                         for (int n = 1; n <= signal_histos[i]->GetXaxis()->GetNbins(); ++n) {
@@ -1282,8 +1342,8 @@ for (int i=0;i<nhistos;i++){
 
                         std::ostringstream sigmaString;
 //                         sigmaString<<std::setprecision(3)<<totalSensitivity;
-                        sigmaString<<std::setprecision(3)<<sqrt(totalSensitivitySquared) ;//<< " +-" << sqrt(totalSensitivitySquaredErrorSquared/2./sqrt(totalSensitivitySquared));
-                        TLatex* texSig = new TLatex(0.50,0.85,("Tot sigma = " + sigmaString.str() ).c_str());
+                        sigmaString<<std::setprecision(2)<<sqrt(totalSensitivitySquared) ;//<< " +-" << sqrt(totalSensitivitySquaredErrorSquared/2./sqrt(totalSensitivitySquared));
+                        TLatex* texSig = new TLatex(0.50,0.85,("Sensitivity = " + sigmaString.str() ).c_str());
                         texSig->SetNDC();
                         texSig->SetTextAlign(35);
                         texSig->SetTextFont(42);
@@ -1377,21 +1437,37 @@ for (int i=0;i<nhistos;i++){
 //                  }
 //                 data_histos2[i]->Draw("PEsame");
 
-		if ((hist_names[i].CompareTo("hNNoutput")!=0) && (hist_names[i].CompareTo("hNNplusBDT_atanh")!=0) && (hist_names[i].CompareTo("hNNoutput_atanh")!=0) && (hist_names[i].CompareTo("hBDT_VBF")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh")!=0) && (hist_names[i].CompareTo("hZll_mass")!=0)) 
+		if ((hist_names[i].CompareTo("hNNoutput")!=0) && (hist_names[i].CompareTo("hNNplusBDT_atanh")!=0) && (hist_names[i].CompareTo("hNNoutput_atanh")!=0) && (hist_names[i].CompareTo("hBDT_VBF")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125ForAll")!=0) && (hist_names[i].CompareTo("hZll_mass")!=0)  && (hist_names[i].CompareTo("hHll_mass_unprecise")!=0) && (hist_names[i].CompareTo("hHll_mass_precise")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_Rpt0")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_WM1Log5")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_zStar0")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_ptll300")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_softN50")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_MqqLog75")!=0)) 
                  data_histos2[i]->Draw("PEsame");
 
-		if (hist_names[i].CompareTo("hBDT_VBF")==0) {
-             data_histos2[i]->GetXaxis()->SetRangeUser(0.,0.5);
+        if (hist_names[i].CompareTo("hBDT_VBF")==0) {
+             data_histos2[i]->GetXaxis()->SetRangeUser(-1.,0.2);
              data_histos2[i]->Draw("Psame");
         }
 
 		if (hist_names[i].CompareTo("hBDT_VBF_atanh")==0) {
-             data_histos2[i]->GetXaxis()->SetRangeUser(0.,1.);
+             data_histos2[i]->GetXaxis()->SetRangeUser(0.,0.5);
+             data_histos2[i]->Draw("Psame");
+        }
+        
+        if (hist_names[i].CompareTo("hBDT_VBF_atanh_m125ForAll")==0) {
+//              data_histos2[i]->GetXaxis()->SetRangeUser(0.,1.2);
              data_histos2[i]->Draw("Psame");
         }
         
         
+        if (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_zStar0")==0) {
+            data_histos2[i]->GetXaxis()->SetRangeUser(0.,0.9);
+            data_histos2[i]->Draw("Psame");
+        }
+                    
+                    
 
+        if ((hist_names[i].CompareTo("hBDT_VBF_atanh_m125_Rpt0")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_WM1Log5")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_zStar0")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_ptll300")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_softN50")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_MqqLog75")==0))  {
+//             data_histos2[i]->GetXaxis()->SetRangeUser(0.,1.2);
+            data_histos2[i]->Draw("Psame");
+        }
+                    
         
         if (hist_names[i].CompareTo("hNNoutput")==0) {
              data_histos2[i]->GetXaxis()->SetRangeUser(0.,0.5);
@@ -1412,12 +1488,13 @@ for (int i=0;i<nhistos;i++){
         
 
 		if (hist_names[i].CompareTo("hZll_mass")==0) {
+// 		if (hist_names[i].CompareTo("NOhZllMASS")==0) {
             data_histos2[i]->GetXaxis()->SetRangeUser(100.,115);
             TH1F *h_below_115_2 = (TH1F*)data_histos2[i]->Clone("Mll_below_115");
             TH1F *h_above_130_2 = (TH1F*)data_histos2[i]->Clone("Mll_above_130");
 
-            h_below_115_2->GetXaxis()->SetRangeUser(90,115);
-            h_above_130_2->GetXaxis()->SetRangeUser(130,160);
+            h_below_115_2->GetXaxis()->SetRangeUser(110,115);
+            h_above_130_2->GetXaxis()->SetRangeUser(130,145);
 
             h_below_115_2->Draw("Psame");
             h_above_130_2->Draw("Psame");
