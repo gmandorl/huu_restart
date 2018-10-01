@@ -16,6 +16,33 @@ void addErrorToHist (TH1F * histo, float sigma, int n) {
         histo->SetBinContent(n, histo->GetBinContent(n) + histo->GetBinError(n)*sigma);
 }
 
+
+void writePDFErrors (TString BDTversionName, TString fileTag, TFile * file_FitHisto, TFile * file, float lumi) {
+    
+    
+    
+    for (int n = 0; n <= ((TH1F*) file->Get(BDTversionName))->GetNbinsX(); ++n) {
+        TString nameUp  = BDTversionName;
+        TString nameDown  = BDTversionName;
+        nameUp  = nameUp.Append("_mu_VBF_HToMuMu_PDF"+std::to_string(n)+"_Up");
+        nameDown  = nameDown.Append("_mu_VBF_HToMuMu_PDF"+std::to_string(n)+"_Down");
+        
+        TH1F * histo_PDF_Up = (TH1F*) file->Get(nameUp)->Clone();
+        histo_PDF_Up->Scale(lumi);  
+        TH1F * histo_PDF_Down = (TH1F*) file->Get(nameDown)->Clone();
+        histo_PDF_Down->Scale(lumi);
+    
+        file_FitHisto->cd();
+        histo_PDF_Up->Write();
+        histo_PDF_Down->Write();
+    
+    }
+}
+
+
+
+
+
 void writeStatisticalErrors (TString BDTversionName, TString fileTag, TFile * file_FitHisto, TFile * file, float lumi) {
     
 
@@ -54,12 +81,35 @@ void writeStatisticalErrors (TString BDTversionName, TString fileTag, TFile * fi
 }
 
 
+
+
+float compute_DY_normalization(int eventData, std::vector<float> normalization_vector) {
+
+    float sumMC = 0;
+    for (int n=0;n<normalization_vector.size();n++) {
+        std::cout << n << " \t " << normalization_vector[n] << std::endl;
+        sumMC = sumMC + normalization_vector[n];
+    }
+    sumMC = sumMC - normalization_vector[normalization_vector.size()-1];                
+    return eventData - sumMC;
+}
+
+
+
 void macroFitHistoAlsoDataCard () {
     std::cout << "I can see here" << std::endl;
 
     float lumi = 35900.;
+    float FIXED_lumi = 35900.;
+//     FIXED_lumi = 35800 + 44980;   // 2016 + 1017
+//     FIXED_lumi = 120000;          // Expected    2016 + 1017 + 2018
+//     FIXED_lumi = 300000;          // 300 fb -1  
+//     FIXED_lumi = 3000000;          // 3000 fb -1  
+    
+    float scaleLumi = FIXED_lumi/lumi;
+    
     std::string discriminator = "BDT";
-//     discriminator = "NN";
+    discriminator = "NN";
     
     
     
@@ -111,12 +161,13 @@ void macroFitHistoAlsoDataCard () {
     std::vector<std::vector<float>> eventMC;
     std::vector<std::vector<TString>> file_names;
 //     TString file_tag[nfiles]= {"WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
-    std::vector<TString> file_tag= {"WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+//     std::vector<TString> file_tag= {"VBF_HToMuMu","WJetsToLNu","WW","ZZ","WZ","ST","TT","GluGlu_HToMuMu",DY_file_name};  // DY is the last one because k-factor has to be computed first
+    std::vector<TString> file_tag= {"VBF_HToMuMu","WW"/*,"ZZ","WZ"*/,"ST","TT","GluGlu_HToMuMu",DY_file_name};  // DY is the last one because k-factor has to be computed first
     int nfiles  = file_tag.size();
 
     
     
-    for (int j=0;j<uncVariation[0].size()-1;j++) {
+    for (int j=0;j<uncVariation[0].size();j++) {
         file_names.push_back(file_tag);
         eventMC.push_back({0.});
         for (int i=1;i<nfiles;i++) eventMC[j].push_back({0.});
@@ -124,7 +175,7 @@ void macroFitHistoAlsoDataCard () {
         
         
     for (int i=0;i<nfiles;i++){
-        for (int j=0;j<uncVariation[0].size()-1;j++){
+        for (int j=0;j<uncVariation[0].size();j++){
             
             
 //              file_names[i][j] = file_tag[i];
@@ -171,18 +222,19 @@ void macroFitHistoAlsoDataCard () {
     }
 
 ///////////////////////// DATA ///////////////////////////////////////
-    TString file_data_name = "SingleMuon";
-    file_data_name.Append("_mu");
-    file_data_name.Append("_QCDScalenom_JESnom_v25_reskim.root");
+    TString file_data_name = "SingleMuon_mu_QCDScalenom_JESnom_JERnom_PUnom_v25_reskim.root";
+    std::cout <<  "Opening    " << file_data_name << std::endl;
     TFile * file_data   = new TFile (file_data_name);
     TH1F * histo_data_obs  = (TH1F*) file_data->Get(hTitle_atanh.Data());
+    histo_data_obs->Scale(scaleLumi);
     histo_data_obs->SetName((hTitle_atanh+"_mu_data_obs").Data());
     float eventData = histo_data_obs->Integral(0,histo_data_obs->GetNbinsX()+1);
+    int binNumber = histo_data_obs->GetNbinsX();
 /////////////////////// END DATA /////////////////////////////////////
     
     
     
-    file_tag[6] = "DYJetsToLL";
+    file_tag[file_tag.size()-1] = "DYJetsToLL";
 
 
 
@@ -195,10 +247,10 @@ void macroFitHistoAlsoDataCard () {
     
     
     
-    for (int j=0;j<uncVariation[0].size()-1;j++){
+    for (int j=0;j<uncVariation[0].size();j++){
         for (int i=0;i<nfiles;i++){
         
-
+        std::cout <<  j << "\t" << i << std::endl;
         
         TFile * file         = new TFile (file_names[j][i]);
 //         TFile * file_QCDup   = new TFile (file_names_QCDup[i]);
@@ -210,41 +262,14 @@ void macroFitHistoAlsoDataCard () {
 
         
         
-        if(file_tag[i].CompareTo("DYJetsToLL")==0) {lumi = lumi * k_factor_nom; cout << "filetag test:  " << file_tag[i] << endl;}  // DY_highMass_NLO
-        else lumi = 35900.;
-            
+//         if(file_tag[i].CompareTo("DYJetsToLL")==0) {lumi = lumi * k_factor_nom; cout << "filetag test:  " << file_tag[i] << endl;}  // DY_highMass_NLO
+//         else lumi = FIXED_lumi;
+        lumi = FIXED_lumi;
             
         
 //-------------------------------------------------------------------------------AGGIUNGERE QUESTI ERRORI-----------------------------------------------------------------------------
 
         if (j==0) {
-//             for (int k=1;k<Nsyst_NoConst;++k){
-// 
-//         
-//                 cout << "filename = " << file_names[j][i] << "   \t" <<  histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[k]+"_Up"<< endl;
-// 
-//                 TH1F * histoSys_BDT_Up          = (TH1F*) file->Get(hTitle.Data())->Clone((histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[k]+"_Up").Data());
-//                 TH1F * histoSys_atanhBDT_Up     = (TH1F*) file->Get(hTitle_atanh.Data())->Clone((histTitle+"atanh_mu_"+file_tag[i]+"_"+uncertainty_name[k]+"_Up").Data());
-//                 TH1F * histoSys_BDT_Down        = (TH1F*) file->Get(hTitle.Data())->Clone((histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[k]+"_Down").Data());
-//                 TH1F * histoSys_atanhBDT_Down   = (TH1F*) file->Get(hTitle_atanh.Data())->Clone((histTitle+"atanh_mu_"+file_tag[i]+"_"+uncertainty_name[k]+"_Down").Data());
-// 
-//                 
-//                     
-//                 file_FitHisto->cd();
-// 
-//                 histoSys_BDT_Up->Scale(lumi);
-//                 histoSys_atanhBDT_Up->Scale(lumi);
-//                 histoSys_BDT_Down->Scale(lumi);
-//                 histoSys_atanhBDT_Down->Scale(lumi);
-// 
-//                 histoSys_BDT_Up->Write();
-//                 histoSys_atanhBDT_Up->Write();
-//                 histoSys_BDT_Down->Write();
-//                 histoSys_atanhBDT_Down->Write();
-// 
-//             }
-                
-                
 
             
             
@@ -252,19 +277,17 @@ void macroFitHistoAlsoDataCard () {
             TH1F * histo_atanhBDT_nom = (TH1F*) file->Get(hTitle_atanh.Data())->Clone();
             histo_BDT_nom->SetName((histTitle+"mu_"+file_tag[i]).Data());
             histo_atanhBDT_nom->SetName((histTitle+"atanh_mu_"+file_tag[i]).Data());
-            
-            
-            
-            TString histTitleLinear = hTitle;
-            writeStatisticalErrors (histTitleLinear, file_tag[i], file_FitHisto, file, lumi);
-            histTitleLinear = hTitle_atanh;
-            writeStatisticalErrors (histTitleLinear, file_tag[i], file_FitHisto, file, lumi);
+
     
 
             TH1F * histoSys_BDT_Up_      = (TH1F*) file->Get(hTitle.Data())->Clone((histTitle+"mu_"+file_tag[i]+"_"+uncertainty_name[0]+"_Up").Data());
             TH1F * histoSys_atanhBDT_Up_ = (TH1F*) file->Get(hTitle_atanh.Data())->Clone((histTitle+"atanh_mu_"+file_tag[i]+"_"+uncertainty_name[0]+"_Up").Data()); 
             
 
+            std::cout << file_names[j][i] << " \t " << lumi << std::endl;
+            std::cout << file_names[j][i] << " \t " << histo_BDT_nom->Integral(0,histo_BDT_nom->GetNbinsX()+1)*FIXED_lumi << std::endl;
+            
+            
             histoSys_BDT_Up_->Scale(lumi);
             histoSys_atanhBDT_Up_->Scale(lumi);
             histo_BDT_nom->Scale(lumi);
@@ -272,13 +295,44 @@ void macroFitHistoAlsoDataCard () {
             
             eventMC[j][i]= histo_BDT_nom->Integral(0,histo_BDT_nom->GetNbinsX()+1);    
             
+
+        
+            if (i == nfiles-1) {
+                std::vector<float> normalization_vector;
+                for (int n = 0; n < nfiles; n++) normalization_vector.push_back(eventMC[j][n]);
+                float DY_realNormalization = compute_DY_normalization(eventData, normalization_vector);
+                
+                float kFact = DY_realNormalization/normalization_vector[normalization_vector.size()-1];
+                std::cout << "k-factor \t " << eventData << "\t" << DY_realNormalization <<  "\t" << normalization_vector[normalization_vector.size()-1]  << " \t " << kFact << std::endl;
+                
+                
+                histoSys_BDT_Up_->Scale(kFact);
+                histoSys_atanhBDT_Up_->Scale(kFact);
+                histo_BDT_nom->Scale(kFact);
+                histo_atanhBDT_nom->Scale(kFact);
+                
+                lumi = kFact * FIXED_lumi;
+                eventMC[j][i]=kFact * eventMC[j][i];
+            }
+            
+            
+            file_FitHisto->cd();
+            
+            TString histTitleLinear = hTitle;
+            writeStatisticalErrors (histTitleLinear, file_tag[i], file_FitHisto, file, lumi);
+            histTitleLinear = hTitle_atanh;
+            writeStatisticalErrors (histTitleLinear, file_tag[i], file_FitHisto, file, lumi);
+            
+            std::cout << " Prima di writePDFErrors " << std::endl;
+            if (file_tag[i].CompareTo("VBF_HToMuMu")==0) writePDFErrors (hTitle_atanh, "VBF_HToMuMu", file_FitHisto, file, lumi);
+            std::cout << " Dopo writePDFErrors "  << std::endl;
+            
             histoSys_BDT_Up_->Write();
             histoSys_atanhBDT_Up_->Write();
             histo_BDT_nom->Write();
-            histo_atanhBDT_nom->Write(); 
-        
-        
-                
+            histo_atanhBDT_nom->Write();  
+
+            
         }
         else {
         
@@ -312,10 +366,48 @@ void macroFitHistoAlsoDataCard () {
             
 
             
+                  
+
+            
             
             histoSys->Scale(lumi);
             histoSys_atanh->Scale(lumi);
             eventMC[j][i]= histoSys->Integral(0,histoSys->GetNbinsX()+1);  
+            
+/*            
+            if (i == nfiles-1) {
+                float sumMC = 0;
+                for (int n=0;n<nfiles;n++) {
+                    std::cout << j << " \t "<< n << " \t " << eventMC[j][n] << std::endl;
+                    sumMC = sumMC + eventMC[j][n];
+                }
+                sumMC = sumMC - eventMC[j][nfiles-1];
+                float kFact = (eventData - sumMC)/eventMC[j][nfiles-1];
+                std::cout << "k-factor \t " << eventData << "\t" << sumMC <<  "\t" << eventMC[j][nfiles-1] << " \t " << (eventData - sumMC) << " \t " << kFact << std::endl;
+                
+                histoSys->Scale(kFact);
+                histoSys_atanh->Scale(kFact);
+            }*/
+            
+            
+            
+            if (i == nfiles-1) {
+                std::vector<float> normalization_vector;
+                for (int n = 0; n < nfiles; n++) normalization_vector.push_back(eventMC[j][n]);
+                float DY_realNormalization = compute_DY_normalization(eventData, normalization_vector);
+                
+                float kFact = DY_realNormalization/normalization_vector[normalization_vector.size()-1];
+                std::cout << "k-factor \t " << eventData << "\t" << DY_realNormalization <<  "\t" << normalization_vector[normalization_vector.size()-1]  << " \t " << kFact << std::endl;
+                
+                histoSys->Scale(kFact);
+                histoSys_atanh->Scale(kFact);
+                
+                eventMC[j][i]=kFact * eventMC[j][i];
+            } 
+            
+            
+            
+            
             
             file_FitHisto->cd();
             
@@ -437,13 +529,17 @@ void macroFitHistoAlsoDataCard () {
     ofstream eventMC_txt;
     eventMC_txt.open("eventMC.txt"); 
     for (int j=0;j<uncVariation[0].size()-1;j++){
-        for (int i=0;i<nfiles;i++)
+        for (int i=0;i<nfiles;i++){
             eventMC_txt<< file_names[j][i] << "  \t\t\t "<< eventMC[j][i] <<endl;    
+            std::cout << j <<  " \t"  << i << "  \t\t\t "<< eventMC[j][i] <<endl;       
+        }
         eventMC_txt <<endl; 
+        std::cout << endl;
+
     }
     eventMC_txt.close();
     
-    dataCard(eventMC, file_tag, hTitle_atanh, discriminator, eventData);
+    dataCard(eventMC, file_tag, hTitle_atanh, discriminator, eventData, binNumber);
     
 }
 
