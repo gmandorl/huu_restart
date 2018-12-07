@@ -646,7 +646,7 @@ xsec["DYJetsToTauTau_ForcedMuDecay"] = 5765.40 / 3. * 0.1739 * 0.1739 ;
 xsec["DYJetsToLL_M-50_VBFFilter-amcatnloFXFX"] = 41.81;
 xsec["DYJetsToLL_M-50_VBFFilter-madgraphMLM"] = 41.25;
 xsec["DYJetsToLL_M-105To160_VBFFilter-amcatnloFXFX"] = 41.81;
-xsec["DYJetsToLL_M-105To160_VBFFilter-madgraphMLM"] = 41.25*0.0375775/**0.0322284*/;
+xsec["DYJetsToLL_M-105To160_VBFFilter-madgraphMLM"] = 41.25*0.0307832/**0.0322284*/;
 
 
 xsec["DYJetstoLL_madgraph"] = 1.162*4963.; 
@@ -3389,7 +3389,7 @@ if (data==1) Nsyst_NoConst = 1;
 
 
 // nentries = 50;
-nentries = 100000;
+// nentries = 100000;
  for (int entry=0; entry<nentries;++entry){
 //   for (int entry=50000; entry<54000;++entry){
 
