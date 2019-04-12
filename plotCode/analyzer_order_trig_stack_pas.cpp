@@ -142,19 +142,45 @@ gROOT->ProcessLine(".x setTDRStyle.C");
 
 
 int set_type=atoi(argv[1]); // 0 - analysis, 1 - control region , top
+int era=atoi(argv[2]); // 2016, 2017 or 2018
+int Zanalysis=atoi(argv[3]); // 2016, 2017 or 2018
 
 
-const int nfiles  = 10; //9;  //11;
-// const int nfiles  = 8; //9;  //11;
+// const int nfiles  = 10; //9;  //11;
+// const int nfiles  = 11;
 
-//TString leg_names[nfiles] = {"Data","VBF Z #rightarrow ll (#times 10)","WW + jets","ZZ + jets","WZ + jets", "t#bar{t}", "Z + jets"};
-//TString leg_names[nfiles] = {"Data","tZq #rightarrow ll","TTZ #rightarrow ll #nu#nu","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "Z + jets","VBF Z #rightarrow ll"};
+// const int nfiles  = 15;
+const int nfiles  = 8;
 
-//TString leg_names[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "Z + jets (MDG)","VBF Z #rightarrow ll"};
-//TString leg_names[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "Z + jets (AMC)","VBF Z #rightarrow ll"};
 
-TString leg_names[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DY + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
-TString leg_names_2000[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DY + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+// const int nfiles  = 14;
+
+
+
+// TString leg_names[nfiles] = {"Data", "WW DPS", "WZjj", "WWJJToLNuLNu","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DYtautau", "DY + jets", "EW lljj","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+// TString leg_names_2000[nfiles] = {"Data", "WW DPS", "WZjj", "WWJJToLNuLNu","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DYtautau", "DY + jets", "EW lljj","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+
+
+
+TString leg_names[nfiles] = {"Data", "Other bkg","Top", "EW lljj interf", "EW lljj", "DY + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+TString leg_names_2000[nfiles] = {"Data", "Other bkg","Top", "EW lljj interf", "EW lljj", "DY + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+
+
+
+
+
+
+// TString leg_names[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DYtautau", "DY + jets", "EW lljj","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+// TString leg_names_2000[nfiles] = {"Data","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DYtautau", "DY + jets", "EW lljj","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+
+
+
+// TString leg_names[nfiles] = {"Data", "EW lljj", "WW DPS", "WZjj", "WWJJToLNuLNu","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DYtautau", "DY + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+// TString leg_names_2000[nfiles] = {"Data", "EW lljj", "WW DPS", "WZjj", "WWJJToLNuLNu","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DYtautau", "DY + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+
+
+// TString leg_names[nfiles] = {"Data", "WW DPS", "WZjj", "WWJJToLNuLNu","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DYtautau", "DY + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
+// TString leg_names_2000[nfiles] = {"Data", "WW DPS", "WZjj", "WWJJToLNuLNu","W(l#nu) + jets","WW + jets","ZZ + jets","WZ + jets","Single Top", "t#bar{t}", "DYtautau", "DY + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
 
 // TString leg_names[nfiles] = {"Data","W(l#nu) + jets","WW + jets","Single Top", "t#bar{t}", "Z + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
 // TString leg_names_2000[nfiles] = {"Data","W(l#nu) + jets","WW + jets","Single Top", "t#bar{t}", "Z + jets","VBF H #rightarrow ll x20","GluGlu H #rightarrow ll x20"};
@@ -167,7 +193,7 @@ TString set_names[2] = {"Dimuon","Dielectron"};
 //if (set_type==0)leg_names[0] = "Data (DoubleB)";
 //if (set_type==1)leg_names[0] = "Data (SingleB)";
 
-
+// if (Zanalysis) set_names[0]="Z Control Region";
 
 /// change EWK to VBF bla-----------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
@@ -200,11 +226,85 @@ DY_file_name = "DYJetstoLL_amc";
 // TString file_names_JESup[nfiles] =  {"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT","DYJetstoLL_amc","VBF_HToMuMu", "GluGlu_HToMuMu"};
 // TString file_names_JESdown[nfiles] ={"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT","DYJetstoLL_amc","VBF_HToMuMu", "GluGlu_HToMuMu"};
 
-TString file_names[nfiles] =        {"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
-TString file_names_QCDup[nfiles] =  {"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
-TString file_names_QCDdown[nfiles] ={"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
-TString file_names_JESup[nfiles] =  {"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
-TString file_names_JESdown[nfiles] ={"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names[nfiles] =        {"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDup[nfiles] =  {"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDdown[nfiles] ={"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESup[nfiles] =  {"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESdown[nfiles] ={"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name,"VBF_HToMuMu", "GluGlu_HToMuMu"};
+
+
+// TString file_names[nfiles] =        {"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name, "EWK_LLJJ", "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDup[nfiles] =  {"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name, "EWK_LLJJ", "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDdown[nfiles] ={"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name, "EWK_LLJJ", "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESup[nfiles] =  {"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name, "EWK_LLJJ", "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESdown[nfiles] ={"SingleMuon","WJetsToLNu","WW","ZZ","WZ","ST","TT",DY_file_name, "EWK_LLJJ", "VBF_HToMuMu", "GluGlu_HToMuMu"};
+
+
+// TString file_names[nfiles] =        {"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "EWK_LLJJ", "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDup[nfiles] =  {"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "EWK_LLJJ", "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDdown[nfiles] ={"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "EWK_LLJJ", "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESup[nfiles] =  {"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "EWK_LLJJ", "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESdown[nfiles] ={"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "EWK_LLJJ", "VBF_HToMuMu", "GluGlu_HToMuMu"};
+
+
+// TString file_names[nfiles] =        {"SingleMuon", "EWK_LLJJ", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDup[nfiles] =  {"SingleMuon", "EWK_LLJJ", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDdown[nfiles] ={"SingleMuon", "EWK_LLJJ", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESup[nfiles] =  {"SingleMuon", "EWK_LLJJ", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESdown[nfiles] ={"SingleMuon", "EWK_LLJJ", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+
+
+
+
+// TString file_names[nfiles] =        {"SingleMuon", "EWK_LLJJ", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDup[nfiles] =  {"SingleMuon", "EWK_LLJJ", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDdown[nfiles] ={"SingleMuon", "EWK_LLJJ", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESup[nfiles] =  {"SingleMuon", "EWK_LLJJ", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESdown[nfiles] ={"SingleMuon", "EWK_LLJJ", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+
+
+
+TString file_names[nfiles] =         {"SingleMuon", "Other","Top","EWK_LLJJ_INT","EWK_LLJJ",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+TString file_names_QCDup[nfiles] =   {"SingleMuon", "Other","Top","EWK_LLJJ_INT","EWK_LLJJ",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+TString file_names_QCDdown[nfiles] = {"SingleMuon", "Other","Top","EWK_LLJJ_INT","EWK_LLJJ",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+TString file_names_JESup[nfiles] =   {"SingleMuon", "Other","Top","EWK_LLJJ_INT","EWK_LLJJ",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+TString file_names_JESdown[nfiles] = {"SingleMuon", "Other","Top","EWK_LLJJ_INT","EWK_LLJJ",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+
+
+
+
+
+// ------- Z ordered sample ----------
+
+// TString file_names_Z[nfiles] =        {"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "EWK_LLJJ", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDup_Z[nfiles] =  {"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "EWK_LLJJ", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDdown_Z[nfiles] ={"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "EWK_LLJJ", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESup_Z[nfiles] =  {"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "EWK_LLJJ", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESdown_Z[nfiles] ={"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu_EWK_noTop","WJetsToLNu","WW","ZZ","WZ","ST","TT", "EWK_LLJJ", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+
+
+
+
+TString file_names_Z[nfiles] =         {"SingleMuon", "Other","Top","EWK_LLJJ_INT","EWK_LLJJ",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+TString file_names_QCDup_Z[nfiles] =   {"SingleMuon", "Other","Top","EWK_LLJJ_INT","EWK_LLJJ",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+TString file_names_QCDdown_Z[nfiles] = {"SingleMuon", "Other","Top","EWK_LLJJ_INT","EWK_LLJJ",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+TString file_names_JESup_Z[nfiles] =   {"SingleMuon", "Other","Top","EWK_LLJJ_INT","EWK_LLJJ",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+TString file_names_JESdown_Z[nfiles] = {"SingleMuon", "Other","Top","EWK_LLJJ_INT","EWK_LLJJ",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+
+
+
+
+
+
+
+
+
+
+// TString file_names[nfiles] =        {"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDup[nfiles] =  {"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_QCDdown[nfiles] ={"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESup[nfiles] =  {"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
+// TString file_names_JESdown[nfiles] ={"SingleMuon", "WWTo2L2Nu_DoubleScattering", "WLLJJ_WToLNu_EWK", "WWJJToLNuLNu","WJetsToLNu","WW","ZZ","WZ","ST","TT", "DYJetstoTauTau_amc",DY_file_name, "VBF_HToMuMu", "GluGlu_HToMuMu"};
 
 
 
@@ -221,23 +321,71 @@ int bg_begin;
 int qcd_begin=18;
  bg_begin=1;
 
-int FILLCOLOR[nfiles] = {1,kSpring+7,kSpring+8, kSpring+5, kGreen-3, kAzure+1,kBlue-4,kOrange-2,kRed-4,kMagenta+1};
-int LINECOLOR[nfiles] = {1,kSpring+7,kSpring+8, kSpring+5, kGreen-3,kAzure+1,kBlue-4,kOrange-2,kRed-4,kMagenta+1};
-int LINESTYLE[nfiles] = {1,1,1,1,1,1,1,1,1,2};
-int LINEWIDTH[nfiles] = {1,1,1,1,1,1,1,1,3,3};
-int FILLSTYLE[nfiles] = {1001,1001,1001,1001,1001,1001,1001,1001,1001,1001};
+ 
 
-// int FILLCOLOR[nfiles] = {1,kSpring+7,kSpring+8, kAzure+1,kBlue-4,kOrange-2,kRed-4,kMagenta+1};
-// int LINECOLOR[nfiles] = {1,kSpring+7,kSpring+8,kAzure+1,kBlue-4,kOrange-2,kRed-4,kMagenta+1};
-// int LINESTYLE[nfiles] = {1,1,1,1,1,1,1,2};
-// int LINEWIDTH[nfiles] = {1,1,1,1,1,1,3,3};
-// int FILLSTYLE[nfiles] = {1001,1001,1001,1001,1001,1001,1001,1001};
+
+// int FILLCOLOR[nfiles] = {1,kMagenta+3, kPink, kPink-4, kPink-9,kSpring+7,kSpring+8, kSpring+5, kGreen-3, kAzure+1,kBlue-4,kOrange+2,kOrange-2,kRed-4,kMagenta+1};
+// int LINECOLOR[nfiles] = {1,kMagenta+3, kPink, kPink-4, kPink-9,kSpring+7,kSpring+8, kSpring+5, kGreen-3, kAzure+1,kBlue-4,kOrange+2,kOrange-2,kRed-4,kMagenta+1};
+// int LINESTYLE[nfiles] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,2};
+// int LINEWIDTH[nfiles] = {1,1,1,1,1,1,1,1,1,1,1,1,1,3,3};
+// int FILLSTYLE[nfiles] = {1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001};
+
+int FILLCOLOR[nfiles] = {1, kGreen+1,kTeal+10,kMagenta,kMagenta+3,kOrange,kRed-4,kMagenta+1};
+int LINECOLOR[nfiles] = {1, kGreen+1,kTeal+10,kMagenta,kMagenta+3,kOrange,kRed-4,kMagenta+1};
+int LINESTYLE[nfiles] = {1,1,1,1,1,1,1,2};
+int LINEWIDTH[nfiles] = {1,1,1,1,1,1,3,3};
+int FILLSTYLE[nfiles] = {1001,1001,1001,1001,1001,1001,1001,1001};
+
+// int LINESTYLE[nfiles] = {1,1,1,1,1,1,1,1,1,1,1,2};
+// int LINEWIDTH[nfiles] = {1,1,1,1,1,1,1,1,1,1,3,3};
+// int FILLSTYLE[nfiles] = {1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001};
+
+
+// int FILLCOLOR[nfiles] = {1, kPink, kPink-4, kPink-9,kSpring+7,kSpring+8, kSpring+5, kGreen-3, kAzure+1,kBlue-4,kOrange+2,kOrange-2,kRed-4,kMagenta+1};
+// int LINECOLOR[nfiles] = {1, kPink, kPink-4, kPink-9,kSpring+7,kSpring+8, kSpring+5, kGreen-3,kAzure+1,kBlue-4,kOrange+2,kOrange-2,kRed-4,kMagenta+1};
+// int LINESTYLE[nfiles] = {1,1,1,1,1,1,1,1,1,1,1,1,1,2};
+// int LINEWIDTH[nfiles] = {1,1,1,1,1,1,1,1,1,1,1,1,3,3};
+// int FILLSTYLE[nfiles] = {1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001};
 
 
 	
 //int order[nfiles] = {0,1,2,3,4,5,6,7,8,9,10};// number in file_names array as they should appear in the legend
-int order[nfiles] = {0,1,2,3,4,5,6,7,8,9};// number in file_names array as they should appear in the legend
-// int order[nfiles] = {0,1,2,3,4,5,6,7};// number in file_names array as they should appear in the legend
+// int order[nfiles] = {0,1,2,3,4,5,6,7,8,9};// number in file_names array as they should appear in the legend
+// int order[nfiles] = {0,1,2,3,4,5,6,7,8,9,10,11};// number in file_names array as they should appear in the legend
+// int order[nfiles] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13};// number in file_names array as they should appear in the legend
+// int order[nfiles] = {0,1,2,3,4,5,6,7};// number in file_names array as they should appear in the legen
+
+// int order[nfiles] = {0,12,1,2,3,4,5,6,7,8,9,10,11,13,14};// number in file_names array as they should appear in the legend
+int order[nfiles] = {0,1,2,3,4,5,6,7};// number in file_names array as they should appear in the legend
+
+
+
+// int FILLCOLOR_Z[nfiles] = {1, kPink, kPink-4, kPink-9,kSpring+7,kSpring+8, kSpring+5, kGreen-3, kAzure+1,kBlue-4,kMagenta+3,kOrange+2,kOrange-2,kRed-4,kMagenta+1};
+// int LINECOLOR_Z[nfiles] = {1, kPink, kPink-4, kPink-9,kSpring+7,kSpring+8, kSpring+5, kGreen-3, kAzure+1,kBlue-4,kMagenta+3,kOrange+2,kOrange-2,kRed-4,kMagenta+1};
+// int order_Z[nfiles] = {0,1,2,3,4,5,6,7,8,9,12,10,11,13,14};// number in file_names array as they should appear in the legend
+// 
+// if (Zanalysis) {
+//         for (int n=0; n<nfiles; n++) {
+//             FILLCOLOR[n] = FILLCOLOR_Z[n];
+//             LINECOLOR[n] = LINECOLOR_Z[n];
+//             order[n] = order_Z[n];
+//             
+//             file_names[n]           = file_names_Z[n];
+//             file_names_QCDup[n]     = file_names_QCDup_Z[n];
+//             file_names_QCDdown[n]   = file_names_QCDdown_Z[n];
+//             file_names_JESup[n]     = file_names_JESup_Z[n];
+//             file_names_JESdown[n]   = file_names_JESdown_Z[n];
+//         }
+// }
+    
+    // if (Zanalysis) {
+//     FILLCOLOR = {1, kPink, kPink-4, kPink-9,kSpring+7,kSpring+8, kSpring+5, kGreen-3, kAzure+1,kBlue-4,kOrange+2,kOrange-2,kMagenta+3,kRed-4,kMagenta+1};
+//     LINECOLOR = {1, kPink, kPink-4, kPink-9,kSpring+7,kSpring+8, kSpring+5, kGreen-3, kAzure+1,kBlue-4,kOrange+2,kOrange-2,kMagenta+3,kRed-4,kMagenta+1};
+//     order = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14};// number in file_names array as they should appear in the legend
+// }
+
+
+
 int order_legend[nfiles]; 
 for (int i=0;i<nfiles;i++){
 	order_legend[order[i]]=i;
@@ -251,6 +399,7 @@ TString set[3]={"_mu","_el"};
 for (int i=0;i<nfiles;i++){
 	if (i==0) file_names[i] = data_name[set_type];
         file_names[i].Prepend("/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/histoFileDir/"); 
+//         file_names[i].Prepend("/scratch/mandorli/Hmumu/restartFromFilippo/CMSSW_8_0_28/src/code/HistoFileDir/"); 
 
 	file_names[i].Append(set[set_type]);
 	file_names_QCDup[i] =   file_names[i];
@@ -278,24 +427,40 @@ for (int i=0;i<nfiles;i++){
 // 		file_names_JESdown[i].Append("_QCDScalenom_JESdown_JERnom_PUnom_v25_reskim");
 // 	}
 	
-//         if (i==0) file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2017");
-//     	if (i!=0) {
-// 		file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2017");
-// 		file_names_QCDup[i].Append("_QCDScaleup_JESnom_JERnom_PUnom_nano_2017");
-// 		file_names_QCDdown[i].Append("_QCDScaledown_JESnom_JERnom_PUnom_nano_2017");
-// 		file_names_JESup[i].Append("_QCDScalenom_JESup_JERnom_PUnom_nano_2017");
-// 		file_names_JESdown[i].Append("_QCDScalenom_JESdown_JERnom_PUnom_nano_2017");
-// 	}
+        if (era == 2017) {
+            if (i==0) file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2017");
+            if (i!=0) {
+                    file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2017");
+                    file_names_QCDup[i].Append("_QCDScaleup_JESnom_JERnom_PUnom_nano_2017");
+                    file_names_QCDdown[i].Append("_QCDScaledown_JESnom_JERnom_PUnom_nano_2017");
+                    file_names_JESup[i].Append("_QCDScalenom_JESup_JERnom_PUnom_nano_2017");
+                    file_names_JESdown[i].Append("_QCDScalenom_JESdown_JERnom_PUnom_nano_2017");
+            }
+        }
 	
-        if (i==0) file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2016");
-    	if (i!=0) {
-		file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2016");
-		file_names_QCDup[i].Append("_QCDScaleup_JESnom_JERnom_PUnom_nano_2016");
-		file_names_QCDdown[i].Append("_QCDScaledown_JESnom_JERnom_PUnom_nano_2016");
-		file_names_JESup[i].Append("_QCDScalenom_JESup_JERnom_PUnom_nano_2016");
-		file_names_JESdown[i].Append("_QCDScalenom_JESdown_JERnom_PUnom_nano_2016");
-	}
-	
+
+	if (era == 2016) {
+            if (i==0) file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2016");
+            if (i!=0) {
+                    file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2016");
+                    file_names_QCDup[i].Append("_QCDScaleup_JESnom_JERnom_PUnom_nano_2016");
+                    file_names_QCDdown[i].Append("_QCDScaledown_JESnom_JERnom_PUnom_nano_2016");
+                    file_names_JESup[i].Append("_QCDScalenom_JESup_JERnom_PUnom_nano_2016");
+                    file_names_JESdown[i].Append("_QCDScalenom_JESdown_JERnom_PUnom_nano_2016");
+            }
+        }
+
+        
+	if (era == 2018) {
+            if (i==0) file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2018");
+            if (i!=0) {
+                    file_names[i].Append("_QCDScalenom_JESnom_JERnom_PUnom_nano_2018");
+                    file_names_QCDup[i].Append("_QCDScaleup_JESnom_JERnom_PUnom_nano_2018");
+                    file_names_QCDdown[i].Append("_QCDScaledown_JESnom_JERnom_PUnom_nano_2018");
+                    file_names_JESup[i].Append("_QCDScalenom_JESup_JERnom_PUnom_nano_2018");
+                    file_names_JESdown[i].Append("_QCDScalenom_JESdown_JERnom_PUnom_nano_2018");
+            }
+        }
 	
 	
 	
@@ -332,12 +497,14 @@ TString dir_name= "plotsDirectory";
 // dir_name.Append(set[set_type]+"/");
 dir_name.Append("/");
 //TString dir_name = "plots_amc/";
-Float_t lumi = 35900;
+Float_t lumi = 35900*0.93;
 // Float_t lumi = 41000;
+if (era==2018) lumi = 59970;
+if (era==2017) lumi = 41530;
 
 
 
-TLegend *leg = new TLegend(0.77,0.65,0.92,0.9); //without writing about SF
+TLegend *leg = new TLegend(0.77,0.55,0.92,0.9); //without writing about SF
 leg->SetFillColor(0);
 leg->SetBorderSize(0);
 leg->SetTextFont(42);
@@ -376,8 +543,8 @@ TString hist_names[nhistos]={"hMqq", "hZll_mass", "hSelectionCuts","hdeltaM", "h
 
 
 
-const int nhistos =137; //79 //40//52
-TString hist_names[nhistos]={"hMqq", "hZll_mass"/*, "hHll_mass_precise", "hHll_mass_unprecise"*/, "hEtaQQ","hHTsoftEWK", "hPtSoftJets","hSoft_n2EWK","hSoft_n5EWK","hSoft_n10EWK","hPVs", "hJet1q_pt", "hJet1q_eta", "hJet1q_phi", "hJet2q_phi", "hJet1q_ptd", "hJet1q_axis2", "hJet1q_mult", "hJet2q_pt", "hJet2q_eta", "hJet2q_ptd", "hJet2q_axis2", "hJet2q_mult", "hmet",   "hJet1q_leadTrackPt", "hJet2q_leadTrackPt", "hqq_pt", "hqgl", "hqgl2", "hqglAtanh", "hqgl2Atanh", "hZll_pt", "hZll_phi", "hZll_eta",  "hrho", "hlepton1_pt", "hlepton2_pt", "hlepton1_eta", "hlepton2_eta","hlepton1_iso03", "hlepton2_iso03", "hDeltaRelQQ", "hRpt", "hRptAtanh", "hEtaQQSum", "hPhiZQ1", "hPhiZQ2", "hEtaHQ1", "hEtaHQ2", "hZll_y", "hZll_ystar", "hZll_zstar", "hZll_zstar_log", "hMqq_log", "hlheV_pt","hPhiQQ", "hJets12_pt","hJets12_pt_log", "hJet1q_pt_log", "hJet2q_pt_log", "hHT","hlheHT_log", "hlheNj", "hNAdJets", "hJet3_pt", "hJet3_pt_log", "hsoftleadTrackEta", "hAdJetHT", "hJet3_eta", "hJet3_pt_new", "hMaxJetBTagCSV", "hBDiscriminator_CSV", "hBDiscriminator_CMVA","hVirtual_Pt1","hVirtual_Pt2","hVirtual_Pt1_log", "hVirtual_Pt2_log", "hgen_mass", "hgenJetMass",  "hMaxJetBTagCMVA","hthetastar_W1","hthetastar_W2", "hMaxSecondJetBTagCMVA", "hMaxSecondJetBTagCSV","hVirtual_eta1","hVirtual_eta2", "hThetaStarJet", "hThetaPlanes", "hThetaStar", "hThetaStarJetAtanh", "hThetaPlanesAtanh","hDiffmass", "hIsolatedElectrons", "hThetaStarAbs","hTheta_HiggsJ1","hTheta_HiggsJ2","hthetastar_W2toHW1","hthetastar_W1toHW2","hthetastar_HtoWW", "hmumujj_pt", "hmumujj_pt", "hmumujj_ptLog", "hEnergy_fraction_Parton1_log", "hdeltaR1", "hdeltaR2",  "hEnergy_fraction_Parton2_log","hdeltaM", "hdeltaMRel", "hTotalEnergy","hTotalEnergylog","hVirtual_phi1","hVirtual_phi2","hWWmass", "hEnergy_fraction_Parton1","hPz","hPzAbs", "hPzAbsLog","hVirtual_Wmass1","hVirtual_Wmass2", "hVirtual_Wmass1_log", "hVirtual_Wmass2_log",  "hInvariant_MassLog","hInvariant_Mass" , "hEnergy_fraction_Parton2",  /*"hNNplusBDT_atanh", "hNNoutput" , "hNNoutput_atanh",*/ "hBDT_VBF_atanh_m125_Rpt0", "hBDT_VBF_atanh_m125_WM1Log5", "hBDT_VBF_atanh_m125_zStar0", "hBDT_VBF_atanh_m125_ptll300", "hBDT_VBF_atanh_m125_softN50", "hBDT_VBF_atanh_m125_MqqLog75", "hBDT_VBF_atanh_m125_onlyMqq", "hBDT_VBF_atanh_m125_onlyRpt", "hBDT_VBF_atanh_m125_onlyWM1", "hBDT_VBF_atanh_m125_onlyzStar", "hBDT_VBF_atanh_m125_onlyptll", "hBDT_VBF_atanh_m125_onlysoftN5", "hBDT_VBF_atanh_m125ForAll", "hBDT_VBF" , "hBDT_VBF_atanh"};
+const int nhistos =149; //79 //40//52
+TString hist_names[nhistos]={/*"hBDT_VBF_atanh", */"hMqq", "hSelectionCuts", "hMqq_cut06", "hMqq_cut08", /*"hMqq_cut10", "hMqq_cut12",*/ "hZll_mass", "hZll_mass_complete"/*, "hHll_mass_precise", "hHll_mass_unprecise"*/ , "hEtaQQ","hHTsoftEWK", "hPtSoftJets","hSoft_n2EWK","hSoft_n5EWK","hSoft_n10EWK","hPVs", "hJet1q_neHEF", "hJet1q_chHEF", "hJet1q_neEmEF", "hJet1q_chEmEF", "hJet2q_neHEF", "hJet2q_chHEF", "hJet2q_neEmEF", "hJet2q_chEmEF" , "hJetUnder50_neHEF", "hJetUnder50_chHEF", "hJetUnder50_neEmEF", "hJetUnder50_chEmEF", "hJetOver50_neHEF", "hJetOver50_chHEF", "hJetOver50_neEmEF", "hJetOver50_chEmEF", "hJetUnder50_eta", "hJetOver50_eta", "hJet1q_pt", "hJet1q_eta", "hJet1q_phi", "hJet2q_phi", "hJet1q_ptd", "hJet1q_axis2", "hJet1q_mult", "hJet2q_pt", "hJet2q_eta", "hJet2q_ptd", "hJet2q_axis2", "hJet2q_mult", "hmet",   "hJet1q_leadTrackPt", "hJet2q_leadTrackPt", "hqq_pt", "hqgl", "hqgl2", "hqglAtanh", "hqgl2Atanh", "hZll_pt", "hZll_phi", "hZll_eta",  "hrho", "hlepton1_pt", "hlepton2_pt", "hlepton1_eta", "hlepton2_eta","hlepton1_iso03", "hlepton2_iso03", /*"hGenLepton_matching1", "hGenLepton_matching2",*/ "hnGenLep",  "hDeltaRelQQ", "hRpt", "hRptAtanh", "hEtaQQSum", "hPhiZQ1", "hPhiZQ2", "hEtaHQ1", "hEtaHQ2", "hZll_y", "hZll_ystar", "hZll_zstar", "hZll_zstar_log", "hMqq_log", "hlheV_pt","hPhiQQ", "hJets12_pt","hJets12_pt_log", "hJet1q_pt_log", "hJet2q_pt_log", "hHT","hlheHT_log"/*, "hlheHT_log_BDTgt08","hlheHT", "hlheHT_BDTgt08"*/, "hlheNj", "hNAdJets", "hJet3_pt", "hJet3_pt_log", "hsoftleadTrackEta", "hAdJetHT", "hJet3_eta", "hJet3_pt_new", "hMaxJetBTagCSV", "hBDiscriminator_CSV", "hBDiscriminator_CMVA","hVirtual_Pt1","hVirtual_Pt2","hVirtual_Pt1_log", "hVirtual_Pt2_log", "hgen_mass", /*"hgenJetMass",*/  "hMaxJetBTagCMVA","hthetastar_W1","hthetastar_W2", "hMaxSecondJetBTagCMVA", "hMaxSecondJetBTagCSV","hVirtual_eta1","hVirtual_eta2", "hThetaStarJet", "hThetaPlanes", "hThetaStar", "hThetaStarJetAtanh", "hThetaPlanesAtanh","hDiffmass",/* "hIsolatedElectrons", "hpuId_jetWithoutGenJet", "hpuId_AllJets",*/  "hThetaStarAbs","hTheta_HiggsJ1","hTheta_HiggsJ2","hthetastar_W2toHW1","hthetastar_W1toHW2","hthetastar_HtoWW", /*"hmaxAbsEta_BDTmFixgt08", "hmaxAbsEta_BDTmFixgt1", "hmaxAbsEta",*/ "hminAbsEta", "hmumujj_pt", "hmumujj_pt", "hmumujj_ptLog", "hEnergy_fraction_Parton1_log", "hdeltaR1", "hdeltaR2",  "hEnergy_fraction_Parton2_log","hdeltaM", "hdeltaMRel", "hTotalEnergy","hTotalEnergylog","hVirtual_phi1","hVirtual_phi2","hWWmass", "hEnergy_fraction_Parton1","hPz","hPzAbs", "hPzAbsLog","hVirtual_Wmass1","hVirtual_Wmass2", "hVirtual_Wmass1_log", "hVirtual_Wmass2_log",  "hInvariant_MassLog","hInvariant_Mass" , "hEnergy_fraction_Parton2",  /*"hNNplusBDT_atanh", "hNNoutput_atanh_mFix", "hNNoutput_atanh_mFix_zFix","hNNoutput_atanh_mFix_controlRegion", "hNNoutput_atanh_mFix_controlRegionDown", "hNNoutput_atanh_mFix_controlRegionUp",  /*"hNNoutput" , "hNNoutput_atanh","hBDT_VBF_atanh_m125_Rpt0", "hBDT_VBF_atanh_m125_WM1Log5", "hBDT_VBF_atanh_m125_zStar0", "hBDT_VBF_atanh_m125_ptll300", "hBDT_VBF_atanh_m125_softN50", "hBDT_VBF_atanh_m125_MqqLog75", "hBDT_VBF_atanh_m125_mumujjPt",  "hBDT_VBF_atanh_m125_DEtajj", "hBDT_VBF_atanh_m125_Theta2", "hBDT_VBF_atanh_m125_onlyMqq", "hBDT_VBF_atanh_m125_onlyRpt", "hBDT_VBF_atanh_m125_onlyWM1", "hBDT_VBF_atanh_m125_onlyzStar", "hBDT_VBF_atanh_m125_onlyptll", "hBDT_VBF_atanh_m125_onlysoftN5", "hBDT_VBF_atanh_m125_onlymumujjPt", "hBDT_VBF_atanh_m125_onlyDEtajj", "hBDT_VBF_atanh_m125_onlyTheta2", "hBDT_VBF_atanh_m125ForAll",*/ "hBDT_VBF_atanh_m125ControlRegion", "hBDT_VBF_atanh_m125ControlRegionUp", "hBDT_VBF_atanh_m125ControlRegionDown", "hBDT_VBF" , "hBDT_VBF_atanh"};
 
 
 
@@ -386,7 +553,7 @@ TString hist_names[nhistos]={"hMqq", "hZll_mass"/*, "hHll_mass_precise", "hHll_m
 // const int nhistos =23; //79 //40//52
 // TString hist_names[nhistos]={"hMqq", "hmatchLeading", "hmatchSubleading", "hminAbsEta", "hminAbsEta_cut06", "hminAbsEta_cut08", "hminAbsEta_GEN", "hZll_mass", "hdeltaR1", "hdeltaR2", "hgenJetMass_cut06", "hgenJetMass_cut08", "hgenJetMass_cut10", "hgenJetMass", "hgenJetMass_cut12", "hMqq_cut06", "hMqq_cut08", "hMqq_cut10", "hMqq_cut12", "hminAbsEta_cut10", "hminAbsEta_cut12",  "hBDT_VBF" , "hBDT_VBF_atanh"};
 
-std::vector<std::string> variablesName_in_2D_plot = {"Zll_mass", "deltaM"};
+std::vector<std::string> variablesName_in_2D_plot =  {"singleMuTrigger", "doubleMuTrigger"}; // {"Zll_mass", "deltaM"};
 // std::vector<std::string> variablesName_in_2D_plot = {"Zll_mass", "deltaM", "Xparton1Log", "Xparton2Log", "RpT", "zStar"};
 // std::vector<std::string> variablesName_in_2D_plot = {"Zll_mass", "deltaM", "deltaR1", "deltaR2", "RpT", "zStar", "BDToutput", "genJetMassLeading", "hgenJetMassMatched", "Mqq", "indexFirstJet", "indexSecondJet"};
 std::vector<std::string> hist2D_names;
@@ -409,7 +576,7 @@ for (int i = 0; i < variablesName_in_2D_plot.size(); i++) {
 // hist2D_names.push_back("hNN_Vs_BDT_atanh");     
         
 
-
+std::vector<TH1F*> hisoSensitivity_binByBin_VECTOR;
 
 
 std::array<int,200> LOGY_array = {};
@@ -574,13 +741,13 @@ for (int counter_ratio=0; counter_ratio < 5;counter_ratio++) {
         std::cout << file_names[fileIterator] << std::endl;
 
         file_initial_mc = TFile::Open(file_names_mc[fileIterator]);
-
         string file_name_tag = file_names_mc[fileIterator].Data();
+
         TH1F *histos_mc[100];
         int hist=0;
-        histos_mc[hist] = (TH1F*)file_initial_mc->Get(hist_names[hist])->Clone("mc");
 
-                        
+        histos_mc[hist] = (TH1F*)file_initial_mc->Get(hist_names[hist])->Clone("mc");
+           
         if (fileIterator==0) dataInt = histos_mc[hist]->IntegralAndError(0,histos_mc[hist]->GetNbinsX()+1, dataError); 
         if (fileIterator!=0) {
             histos_mc[hist]->Scale(lumi);
@@ -588,25 +755,24 @@ for (int counter_ratio=0; counter_ratio < 5;counter_ratio++) {
 /*            if (file_name_tag.find("HToMuMu")==std::string::npos) MCint+=histos_mc[hist]->Integral(0,histos_mc[hist]->GetNbinsX()+1); 
             else MCsign +=histos_mc[hist]->Integral(0,histos_mc[hist]->GetNbinsX()+1);*/ 
             
+//             std::cout << "INTEGRALI    " << file_name_tag << "  \t " << histos_mc[hist]->Integral(0,histos_mc[hist]->GetNbinsX()+1) << std::endl;
+
             if (file_name_tag.find(DY_name)!=std::string::npos) {
                 DYint= histos_mc[hist]->IntegralAndError(0,histos_mc[hist]->GetNbinsX()+1, DYError);
                 
             }
             else MCint+=histos_mc[hist]->IntegralAndError(0,histos_mc[hist]->GetNbinsX()+1, MCError); 
 
-
             
         }
 
     }
-
 
     float tmp_ratio = (dataInt-MCint)/DYint;
     ratio[counter_ratio] = tmp_ratio;
     ratioError[counter_ratio] = DYError/DYint*ratio[counter_ratio];
 //     ratio[counter_ratio] = 1.;
     if(counter_ratio == 0)  out_efficiency << "ratio  "  << counter_ratio << " : " << ratio[0] <<   " \t\t DYint : " << DYint <<   " \t\t MCint : " << MCint  <<   " \t\t dataInt : " << dataInt << endl;
-
 
 }
 
@@ -645,7 +811,7 @@ for (int fileIterator = 0; fileIterator < nfiles; fileIterator++) {
 
                 if (fileIterator==0) {
                     data_histos[hist] = (TH1F*)file_initial->Get(hist_names[hist])->Clone("data");
-                    add_underFlow_overFlow(data_histos[hist]);
+                    if (!((hist_names[hist].CompareTo("hJetOver50_eta")==0)|| (hist_names[hist].CompareTo("hJetUnder50_eta")==0))) add_underFlow_overFlow(data_histos[hist]);
                     
                 }
 //                 if (hist<3) out_efficiency<< "search for bug 1 " << leg_names[order[fileIterator]]<<"\t\t\t"<< std::setprecision(8)<<histos[hist]->IntegralAndError(1,histos[hist]->GetNbinsX(), bkgIntegralErrorForBUG) << " +- " << bkgIntegralErrorForBUG  <<endl;
@@ -659,7 +825,7 @@ for (int fileIterator = 0; fileIterator < nfiles; fileIterator++) {
 
                 
                 
-                add_underFlow_overFlow(histos[hist]);
+                if (!((hist_names[hist].CompareTo("hJetOver50_eta")==0) || (hist_names[hist].CompareTo("hJetUnder50_eta")==0))) add_underFlow_overFlow(histos[hist]);
 
 //                 histos[hist]->SetBinContent(1, histos[hist]->GetBinContent(0) + histos[hist]->GetBinContent(1));
 //                 histos[hist]->SetBinContent(histos[hist]->GetNbinsX(), histos[hist]->GetBinContent(histos[hist]->GetNbinsX()) + histos[hist]->GetBinContent(histos[hist]->GetNbinsX() + 1));
@@ -744,6 +910,7 @@ for (int fileIterator = 0; fileIterator < nfiles; fileIterator++) {
 		histos[hist]->SetFillStyle(FILLSTYLE[fileIterator]);
 		if ((fileIterator!=0)) histos[hist]->SetFillColor(FILLCOLOR[fileIterator]);
 
+                
 		if (fileIterator==0) {
 			histos[hist]->SetMarkerStyle(20);
 			data_histos[hist]->SetLineColor(1);
@@ -768,18 +935,18 @@ for (int fileIterator = 0; fileIterator < nfiles; fileIterator++) {
 
             
             std::cout << "Reading 2D histos" << std::endl;
-            for(int n=0; n<hist2D_names.size(); n++) {
-                if (file_name_tag.find("DYJetstoLL")!=std::string::npos)  {
-                    TH2F* h =  (TH2F*)file_initial->Get(hist2D_names[n].c_str())->Clone(("h2D"+hist2D_names[n]).c_str());
-                    h->Scale(ratio[0]);
-                    h2Dhistos_DY.push_back(h); 
-                    
-                }
-                if (file_name_tag.find("VBF_HToMuMu")!=std::string::npos)  {
-                    TH2F* h =  (TH2F*)file_initial->Get(hist2D_names[n].c_str())->Clone(("h2D"+hist2D_names[n]).c_str());
-                    h2Dhistos_VBF.push_back(h); 
-                }
-            }
+//             for(int n=0; n<hist2D_names.size(); n++) {
+//                 if (file_name_tag.find("DYJetstoLL")!=std::string::npos)  {
+//                     TH2F* h =  (TH2F*)file_initial->Get(hist2D_names[n].c_str())->Clone(("h2D"+hist2D_names[n]).c_str());
+//                     h->Scale(ratio[0]);
+//                     h2Dhistos_DY.push_back(h); 
+//                     
+//                 }
+//                 if (file_name_tag.find("VBF_HToMuMu")!=std::string::npos)  {
+//                     TH2F* h =  (TH2F*)file_initial->Get(hist2D_names[n].c_str())->Clone(("h2D"+hist2D_names[n]).c_str());
+//                     h2Dhistos_VBF.push_back(h); 
+//                 }
+//             }
             std::cout << "finished reading 2D histos" << std::endl;
             
             double bkgIntegralError = 0;
@@ -1014,8 +1181,11 @@ kfactors[set_type] = 1./(ratio[0] * TSF[set_type]);
 
 for (int i=0;i<nfiles-2;i++){
 	if (i==0) { 
-            leg->AddEntry(histos_for_legened[order_legend[i]],leg_names[i],"P");
-            leg_2000->AddEntry(histos_for_legened[order_legend[i]],leg_names_2000[i],"P");
+//             leg->AddEntry(histos_for_legened[order_legend[i]],leg_names[i],"P");
+//             leg_2000->AddEntry(histos_for_legened[order_legend[i]],leg_names_2000[i],"P");
+            
+            leg->AddEntry(histos_for_legened[i],leg_names[i],"P");
+            leg_2000->AddEntry(histos_for_legened[i],leg_names_2000[i],"P");
         }
 	if (i>=bg_begin) {
             leg->AddEntry(histos_for_legened[order_legend[i]],leg_names[i],"F");
@@ -1049,7 +1219,11 @@ for (int d=0;d<nhistos;d++){
 }
 out_discrimination.close();
 
-TLatex* tex = new TLatex(0.75,0.95,"35.9 fb^{-1} (13 TeV)");
+TString lumiString = " fb^{-1} (13 TeV)";
+if (era==2016) lumiString = "35.9" + lumiString;
+if (era==2017) lumiString = "41.53" + lumiString;
+if (era==2018) lumiString = "59.97" + lumiString;
+TLatex* tex = new TLatex(0.75,0.95,lumiString);
 tex->SetNDC();
 tex->SetTextAlign(35);
 tex->SetTextFont(42);
@@ -1093,7 +1267,8 @@ tex_k->SetLineWidth(2);
 	pCMSset.SetTextAlign(12);
 	pCMSset.SetFillStyle(-1);
 	pCMSset.SetBorderSize(0);
-	pCMSset.AddText(set_names[set_type]);
+	if (!Zanalysis) pCMSset.AddText(set_names[set_type]);
+	else pCMSset.AddText("Z region");
 
 	
 
@@ -1134,8 +1309,11 @@ for (int i=0;i<nhistos;i++){
 		Double_t xmin = signal_histos[i]->GetBinCenter(0);
 		Double_t xmax = signal_histos[i]->GetBinCenter(signal_histos[i]->GetNbinsX())+signal_histos[i]->GetBinWidth(signal_histos[i]->GetNbinsX());
 		if (hist_names[i].CompareTo("hPVs")==0) {
-			xmax=30;
+// 			xmax=30;
 			LOGY=false;
+		}
+                if (hist_names[i].CompareTo("hZll_mass")==0) {
+                    LOGY=false;
 		}
 		if ((hist_names[i].CompareTo("hThetaStar")==0) || (hist_names[i].CompareTo("hThetaStarAbs")==0)) {
 			LOGY=false;
@@ -1144,6 +1322,14 @@ for (int i=0;i<nhistos;i++){
 		if ((hist_names[i].CompareTo("hAdJetHT_bdt")==0) || (hist_names[i].CompareTo("hNAdJetHT_bdt")==0) ||  (hist_names[i].CompareTo("hJet3_pt_bdt")==0)|| (hist_names[i].CompareTo("hJet3_eta_bdt")==0) ||(tmp_hist_name.find("EWK_bdt")!=std::string::npos) ||(tmp_hist_name.find("_bdt2")!=std::string::npos ) ||(tmp_hist_name.find("_mjj1")!=std::string::npos) ||(tmp_hist_name.find("_mjj2")!=std::string::npos ) ) {
 			LOGY=false;
 		}
+		
+		if ((hist_names[i].CompareTo("hJet1q_neEmEF")==0) || (hist_names[i].CompareTo("hJet1q_chEmEF")==0) ||  (hist_names[i].CompareTo("hJet1q_neHEF")==0)|| (hist_names[i].CompareTo("hJet1q_chHEF")==0) || (hist_names[i].CompareTo("hJet2q_neEmEF")==0) || (hist_names[i].CompareTo("hJet2q_chEmEF")==0) ||  (hist_names[i].CompareTo("hJet2q_neHEF")==0)|| (hist_names[i].CompareTo("hJet2q_chHEF")==0)) {
+			LOGY=false;
+		}
+		if ((hist_names[i].CompareTo("hJetUnder50_neHEF")==0) || (hist_names[i].CompareTo("hJetUnder50_chHEF")==0) ||  (hist_names[i].CompareTo("hJetUnder50_neEmEF")==0)|| (hist_names[i].CompareTo("hJetUnder50_chEmEF")==0) || (hist_names[i].CompareTo("hJetOver50_chHEF")==0) || (hist_names[i].CompareTo("hJetOver50_neHEF")==0) ||  (hist_names[i].CompareTo("hJetOver50_neEmEF")==0)|| (hist_names[i].CompareTo("hJetOver50_chEmEF")==0)/*|| (hist_names[i].CompareTo("hJetOver50_eta")==0)|| (hist_names[i].CompareTo("hJetUnder50_eta")==0)*/) {
+			LOGY=false;
+		}
+		
 		if (hist_names[i].CompareTo("hMqq_log")==0) {
 			xmin=4.5;
 			xmax=9;
@@ -1196,7 +1382,7 @@ for (int i=0;i<nhistos;i++){
 //		tex_set->Draw();
                 
                 
-		if ((d_value>0.01)&&(d_value<1.)) disc_value_text->Draw();
+		if (!Zanalysis) if ((d_value>0.01)&&(d_value<1.)) disc_value_text->Draw();
                 stacks[i]->Draw("same");	
 		signal_histos[i]->Draw("same hist");
 		gluonFu_histos[i]->Draw("same hist");
@@ -1208,19 +1394,21 @@ for (int i=0;i<nhistos;i++){
 
 
                 float totalSensitivity=0.;
-                if (hist_names[i].CompareTo("hZll_mass")==0) {
-//                 if (hist_names[i].CompareTo("NOhZllMASS")==0) {
-                    TH1F *h_below_115 = (TH1F*)data_histos[i]->Clone("Mll_below_115");
-                    TH1F *h_above_130 = (TH1F*)data_histos[i]->Clone("Mll_above_130");
-                    
-                    h_below_115->GetXaxis()->SetRangeUser(110,115);
-                    h_above_130->GetXaxis()->SetRangeUser(130,145);
-                    std::cout << "HERE---------------------------------------------------------------------------------------------------------------------------" << std::endl;
+                if  (hist_names[i].CompareTo("hZll_mass")==0) {
+                    if (Zanalysis) data_histos[i]->Draw("Psame");
+                    else {
+                        TH1F *h_below_115 = (TH1F*)data_histos[i]->Clone("Mll_below_115");
+                        TH1F *h_above_130 = (TH1F*)data_histos[i]->Clone("Mll_above_130");
+                        
+                        h_below_115->GetXaxis()->SetRangeUser(110,120);
+                        h_above_130->GetXaxis()->SetRangeUser(130,155);
+                        std::cout << "HERE---------------------------------------------------------------------------------------------------------------------------" << std::endl;
 
 
-                    
-                    h_below_115->Draw("Psame");
-                    h_above_130->Draw("Psame");
+                        
+                        h_below_115->Draw("Psame");
+                        h_above_130->Draw("Psame");
+                    }
                 }
                 else {
                     if ((hist_names[i].CompareTo("hNNoutput")!=0) && (hist_names[i].CompareTo("hNNplusBDT_atanh")!=0) && (hist_names[i].CompareTo("hNNoutput_atanh")!=0) && (hist_names[i].CompareTo("hBDT_VBF")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125ForAll")!=0) && (hist_names[i].CompareTo("hZll_mass")!=0) && (hist_names[i].CompareTo("hHll_mass_precise")!=0) && (hist_names[i].CompareTo("hHll_mass_unprecise")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_Rpt0")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_WM1Log5")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_zStar0")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_ptll300")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_softN50")!=0) && (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_MqqLog75")!=0)) data_histos[i]->Draw("Psame");
@@ -1229,12 +1417,12 @@ for (int i=0;i<nhistos;i++){
                     
                     
                     if (hist_names[i].CompareTo("hBDT_VBF")==0) {
-                        data_histos[i]->GetXaxis()->SetRangeUser(-1.,0.2);
+                        if (!Zanalysis) data_histos[i]->GetXaxis()->SetRangeUser(-1.,0.2);
                         data_histos[i]->Draw("Psame");
                     }
 
                     if (hist_names[i].CompareTo("hBDT_VBF_atanh")==0) {
-                        data_histos[i]->GetXaxis()->SetRangeUser(0.,0.5);
+                       if (!Zanalysis) data_histos[i]->GetXaxis()->SetRangeUser(0.,0.5);
                         data_histos[i]->Draw("Psame");
                     }
                     
@@ -1244,7 +1432,7 @@ for (int i=0;i<nhistos;i++){
                     }
                     
                     if (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_zStar0")==0) {
-                        data_histos[i]->GetXaxis()->SetRangeUser(0.,0.9);
+//                         data_histos[i]->GetXaxis()->SetRangeUser(0.,0.9);
                         data_histos[i]->Draw("Psame");
                     }
                     
@@ -1271,8 +1459,8 @@ for (int i=0;i<nhistos;i++){
                     
                 }
 
-                data_histos[nhistos-2]->GetXaxis()->SetRangeUser(-1.,0.5);
-                data_histos[nhistos-1]->GetXaxis()->SetRangeUser(0.,0.5);
+//                 data_histos[nhistos-2]->GetXaxis()->SetRangeUser(-1.,0.5);
+//                 data_histos[nhistos-1]->GetXaxis()->SetRangeUser(0.,0.5);
 
 //                 if (i>=nhistos-2) {
 //                         for (int n = 1; n <= signal_histos[i]->GetXaxis()->GetNbins(); ++n) {
@@ -1286,8 +1474,11 @@ for (int i=0;i<nhistos;i++){
                         
                         
                         
-//                 if ((hist_names[i].CompareTo("hNNoutput")==0) || (hist_names[i].CompareTo("hNNplusBDT_atanh")==0) || (hist_names[i].CompareTo("hNNoutput_atanh")==0) || (hist_names[i].CompareTo("hBDT_VBF")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh")==0)) {
-                if ((hist_names[i].CompareTo("hNNoutput_atanh")==0) ) {
+                if ((hist_names[i].CompareTo("hNNoutput")==0) || (hist_names[i].CompareTo("hNNplusBDT_atanh")==0) || (hist_names[i].CompareTo("hNNoutput_atanh")==0) || (hist_names[i].CompareTo("hBDT_VBF")==0) || (hist_names[i].CompareTo("hBDT_VBF_atanh")==0)) {
+//                 if ((hist_names[i].CompareTo("hNNoutput_atanh")==0) ) {
+                    TH1F * hisoSensitivity_binByBin = new TH1F (hist_names[i], "", signal_histos[i]->GetNbinsX(), 0, signal_histos[i]->GetNbinsX());
+                    hisoSensitivity_binByBin->GetXaxis()->SetTitle(signal_histos[i]->GetXaxis()->GetTitle());
+                    
                     float totalSensitivitySquared=0.;   
                     float totalSensitivitySquaredErrorSquared = 0.;
                         for (int n = 1; n <= signal_histos[i]->GetXaxis()->GetNbins(); ++n) {
@@ -1328,15 +1519,16 @@ for (int i=0;i<nhistos;i++){
                             
                             float binSensitivitySquared = (histoBin > 0.00001 && staskPos > 0.00001) ? histoBin*histoBin/(staskPos) : 0.;
                             totalSensitivitySquared += binSensitivitySquared;
+                            hisoSensitivity_binByBin->SetBinContent(n, sqrt(binSensitivitySquared));
                             std::cout <<"bin " << n << " \t signal          " << histoBin  <<" \t bkg    " << staskPos << "  \t " << "bin sensitivity  " << binSensitivitySquared << " \t +- " << SensitivitySquaredErrorSquared << std::endl;
                             std::cout <<"\t Sensitivity^2   " <<   totalSensitivitySquared<< " \t +-  " << totalSensitivitySquaredErrorSquared  <<  std::endl;
 
                         }
                         
                         
+                        hisoSensitivity_binByBin_VECTOR.push_back(hisoSensitivity_binByBin);
                         
-                        
-                       data_histos[nhistos-1]->GetXaxis()->SetRangeUser(-1.,0.5);
+//                        data_histos[nhistos-1]->GetXaxis()->SetRangeUser(-1.,0.5);
                         data_histos[i]->Draw("Psame");
 
 
@@ -1350,7 +1542,7 @@ for (int i=0;i<nhistos;i++){
                         texSig->SetTextSize(0.04);
                         texSig->SetLineWidth(2);
 
-                        texSig->Draw();
+                        if (!Zanalysis) texSig->Draw();
                     }
 
 
@@ -1370,12 +1562,13 @@ for (int i=0;i<nhistos;i++){
   		gPad->SetGridy();
 
 		TH1F *frame2 = new TH1F("frame2","",1,xmin,xmax);
-		frame2->SetMinimum(-.5);
-      frame2->SetMaximum(.5);
-		if ((hist_names[i].CompareTo("hAdJetHT_bdt")==0)||(hist_names[i].CompareTo("hJet3_pt_bdt")==0)) {
-			frame2->SetMinimum(-1.);
-    	 	frame2->SetMaximum(1.);
-		}
+                frame2->SetMinimum(-.5);
+                frame2->SetMaximum(.5);
+                frame2->SetMinimum(-0.9);
+                frame2->SetMaximum(0.9);
+                frame2->SetMinimum(-0.45);
+                frame2->SetMaximum(0.45);
+        
       frame2->SetStats(0);
       frame2->SetTitleFont(42,"x");
 		frame2->SetTitleFont(42,"y");
@@ -1441,12 +1634,12 @@ for (int i=0;i<nhistos;i++){
                  data_histos2[i]->Draw("PEsame");
 
         if (hist_names[i].CompareTo("hBDT_VBF")==0) {
-             data_histos2[i]->GetXaxis()->SetRangeUser(-1.,0.2);
+             if (!Zanalysis) data_histos2[i]->GetXaxis()->SetRangeUser(-1.,0.2);
              data_histos2[i]->Draw("Psame");
         }
 
-		if (hist_names[i].CompareTo("hBDT_VBF_atanh")==0) {
-             data_histos2[i]->GetXaxis()->SetRangeUser(0.,0.5);
+        if (hist_names[i].CompareTo("hBDT_VBF_atanh")==0) {
+             if (!Zanalysis) data_histos2[i]->GetXaxis()->SetRangeUser(0.,0.5);
              data_histos2[i]->Draw("Psame");
         }
         
@@ -1457,7 +1650,7 @@ for (int i=0;i<nhistos;i++){
         
         
         if (hist_names[i].CompareTo("hBDT_VBF_atanh_m125_zStar0")==0) {
-            data_histos2[i]->GetXaxis()->SetRangeUser(0.,0.9);
+//             data_histos2[i]->GetXaxis()->SetRangeUser(0.,0.9);
             data_histos2[i]->Draw("Psame");
         }
                     
@@ -1493,8 +1686,8 @@ for (int i=0;i<nhistos;i++){
             TH1F *h_below_115_2 = (TH1F*)data_histos2[i]->Clone("Mll_below_115");
             TH1F *h_above_130_2 = (TH1F*)data_histos2[i]->Clone("Mll_above_130");
 
-            h_below_115_2->GetXaxis()->SetRangeUser(110,115);
-            h_above_130_2->GetXaxis()->SetRangeUser(130,145);
+            h_below_115_2->GetXaxis()->SetRangeUser(110,120);
+            h_above_130_2->GetXaxis()->SetRangeUser(130,155);
 
             h_below_115_2->Draw("Psame");
             h_above_130_2->Draw("Psame");
@@ -1552,5 +1745,20 @@ for (int i=0;i<nhistos;i++){
 
 
 
+// TCanvas *canv = new TCanvas("canv","",900,750);	
+// for (int n = 0; n < hisoSensitivity_binByBin_VECTOR.size(); n++) {
+//     
+// 
+//     canv->cd();
+//     gStyle->SetOptStat(0000);
+//     hisoSensitivity_binByBin_VECTOR[n]->SetLineColor(4);
+//     hisoSensitivity_binByBin_VECTOR[n]->SetLineWidth(2);
+//     hisoSensitivity_binByBin_VECTOR[n]->Draw();
+//     std::string nameSig = hisoSensitivity_binByBin_VECTOR[n]->GetName();
+//     canv->Print(("plotsDirectory/"+nameSig+"_BinByBinSensitivity_"+std::to_string(n)+".png").c_str());
+// }
+
+	
+	
 return 0;
 }
